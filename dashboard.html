@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Learning Portal — VG Mentorship</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#070709;--bg2:#0d0d12;--bg3:#12121a;--surface:#181824;--surface2:#1e1e2e;
+  --accent:#e8a020;--accent2:#ff5e1f;--accent3:#00c896;--gold:#f0b429;
+  --text:#eeedf4;--text2:#9896b0;--text3:#5c5a72;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.04);
+  --radius:18px;--radius-sm:10px;
+  --font-display:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+  --shadow:0 24px 80px rgba(0,0,0,0.6);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");opacity:0.5}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:99px}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(7,7,9,0.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 2rem}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:-1.5px}
+.logo span{color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-user{font-size:0.85rem;color:var(--text2)}
+.nav-user strong{color:var(--text)}
+.btn-sm{padding:0.45rem 1.2rem;border-radius:99px;font-size:0.82rem;font-weight:700;cursor:pointer;border:none;font-family:var(--font-body);transition:all 0.2s}
+.btn-accent{background:var(--accent);color:#000}
+.btn-accent:hover{background:#f0b000}
+.btn-ghost-sm{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-ghost-sm:hover{border-color:rgba(232,160,32,0.4);color:var(--accent)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh;padding-top:64px}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:2rem 1.2rem;display:flex;flex-direction:column;gap:0.3rem;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+.sidebar-ttl{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);padding:0.5rem 0.8rem;margin-top:0.8rem}
+.sidebar a{display:flex;align-items:center;gap:0.7rem;padding:0.7rem 0.9rem;border-radius:var(--radius-sm);color:var(--text2);text-decoration:none;font-size:0.88rem;font-weight:500;transition:all 0.2s}
+.sidebar a:hover,.sidebar a.active{background:rgba(232,160,32,0.09);color:var(--text);border:1px solid rgba(232,160,32,0.15)}
+.sidebar a .si{font-size:1.1rem}
+.main{padding:2.5rem 3rem;max-width:960px}
+
+/* AUTH GATE */
+.auth-gate{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:2rem}
+.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem;width:100%;max-width:440px;position:relative;overflow:hidden}
+.auth-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.auth-tabs{display:flex;gap:0;margin-bottom:2rem;background:var(--bg2);border-radius:var(--radius-sm);padding:4px}
+.auth-tab{flex:1;padding:0.6rem;border:none;background:transparent;color:var(--text2);font-family:var(--font-body);font-size:0.9rem;font-weight:600;cursor:pointer;border-radius:8px;transition:all 0.2s}
+.auth-tab.active{background:var(--accent);color:#000}
+.auth-h{font-family:var(--font-display);font-size:1.5rem;font-weight:800;margin-bottom:0.3rem}
+.auth-sub{color:var(--text2);font-size:0.88rem;margin-bottom:1.8rem}
+.field{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem}
+.field label{font-size:0.8rem;font-weight:600;color:var(--text2)}
+.field input{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0.8rem 1rem;color:var(--text);font-family:var(--font-body);font-size:0.93rem;outline:none;transition:border-color 0.2s}
+.field input:focus{border-color:var(--accent)}
+.btn-full{width:100%;padding:0.9rem;border:none;border-radius:var(--radius-sm);background:var(--accent);color:#000;font-family:var(--font-display);font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:0.5rem}
+.btn-full:hover{background:#f0b000;transform:translateY(-1px)}
+.err-msg{background:rgba(255,94,31,0.1);border:1px solid rgba(255,94,31,0.25);border-radius:8px;padding:0.7rem 1rem;color:#ff7b4f;font-size:0.85rem;margin-bottom:1rem;display:none}
+.err-msg.show{display:block}
+
+/* PAGE HEADERS */
+.page-ttl{font-family:var(--font-display);font-size:1.8rem;font-weight:800;margin-bottom:0.3rem}
+.page-sub{color:var(--text2);font-size:0.93rem;margin-bottom:2rem}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.8rem;margin-bottom:1.5rem}
+.card-ttl{font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:0.5rem}
+.card-sub{color:var(--text2);font-size:0.88rem;margin-bottom:1.2rem}
+
+/* COURSES GRID */
+.courses-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:2rem}
+.course-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.8rem;transition:all 0.3s;cursor:pointer;text-decoration:none;color:var(--text);display:block}
+.course-card:hover{border-color:rgba(232,160,32,0.35);transform:translateY(-3px)}
+.course-card.locked{opacity:0.6}
+.course-icon{font-size:2.2rem;margin-bottom:0.8rem}
+.course-title{font-family:var(--font-display);font-size:1.05rem;font-weight:700;margin-bottom:0.3rem}
+.course-sub{font-size:0.82rem;color:var(--text2);margin-bottom:1rem}
+.progress-bar{height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:0.5rem}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width 0.5s ease}
+.progress-txt{font-size:0.75rem;color:var(--text3)}
+.locked-badge{display:inline-block;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text3);font-size:0.72rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:99px;margin-top:0.5rem}
+.enrolled-badge{display:inline-block;background:rgba(0,200,150,0.1);border:1px solid rgba(0,200,150,0.25);color:var(--accent3);font-size:0.72rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:99px}
+
+/* MODULES */
+.module-list{display:flex;flex-direction:column;gap:0.7rem}
+.module-item{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden}
+.module-hdr{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;cursor:pointer;transition:background 0.2s}
+.module-hdr:hover{background:rgba(255,255,255,0.03)}
+.module-num{width:28px;height:28px;border-radius:50%;background:rgba(232,160,32,0.15);border:1px solid rgba(232,160,32,0.3);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:var(--accent);flex-shrink:0}
+.module-name{flex:1;font-weight:600;font-size:0.92rem}
+.module-pct{font-size:0.78rem;color:var(--text3)}
+.module-arr{color:var(--text3);transition:transform 0.3s}
+.module-item.open .module-arr{transform:rotate(90deg)}
+.lessons-list{display:none;padding:0 1.2rem 1rem}
+.module-item.open .lessons-list{display:block}
+.lesson-row{display:flex;align-items:center;gap:0.7rem;padding:0.5rem 0;border-bottom:1px solid var(--border2);cursor:pointer;transition:color 0.2s}
+.lesson-row:last-child{border-bottom:none}
+.lesson-row:hover{color:var(--accent)}
+.lesson-check{width:20px;height:20px;border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.lesson-check.done{background:var(--accent3);border-color:var(--accent3)}
+.lesson-check.done::after{content:'✓';font-size:0.7rem;color:#000;font-weight:700}
+.lesson-name{font-size:0.88rem;flex:1}
+
+/* STORE */
+.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.store-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;transition:all 0.3s}
+.store-card:hover{border-color:rgba(232,160,32,0.28)}
+.store-card.featured-s{border-color:var(--accent);box-shadow:0 0 40px rgba(232,160,32,0.1)}
+.store-icon{font-size:2.5rem;margin-bottom:1rem}
+.store-title{font-family:var(--font-display);font-size:1.15rem;font-weight:700;margin-bottom:0.3rem}
+.store-desc{color:var(--text2);font-size:0.86rem;margin-bottom:1.2rem;line-height:1.7}
+.store-price{font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--accent);margin-bottom:1rem}
+.store-price span{font-size:0.9rem;color:var(--text3)}
+.btn-buy{width:100%;padding:0.85rem;border:none;border-radius:var(--radius-sm);background:var(--accent);color:#000;font-family:var(--font-display);font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+.btn-buy:hover{background:#f0b000;transform:translateY(-1px)}
+.btn-buy.ml-card{background:linear-gradient(135deg,var(--gold),var(--accent2))}
+.btn-dl{background:var(--accent3);color:#000}
+
+/* PAYMENT MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;display:none}
+.overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem;width:100%;max-width:480px;position:relative;overflow:hidden;animation:slideUp 0.3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.modal-close{position:absolute;top:1.2rem;right:1.2rem;background:none;border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.modal-close:hover{border-color:rgba(232,160,32,0.4);color:var(--accent)}
+.modal-h{font-family:var(--font-display);font-size:1.4rem;font-weight:800;margin-bottom:0.3rem}
+.modal-sub{color:var(--text2);font-size:0.88rem;margin-bottom:1.5rem}
+.upi-box{background:var(--bg2);border:1px solid rgba(232,160,32,0.2);border-radius:var(--radius-sm);padding:1.2rem;text-align:center;margin-bottom:1.5rem}
+.upi-id{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--accent);letter-spacing:0.02em;margin-bottom:0.3rem}
+.upi-note{font-size:0.8rem;color:var(--text3)}
+.amount-show{font-size:2.2rem;font-weight:800;font-family:var(--font-display);color:var(--accent);text-align:center;margin-bottom:1.5rem}
+.steps-pay{list-style:none;margin-bottom:1.5rem}
+.steps-pay li{font-size:0.88rem;color:var(--text2);padding:0.3rem 0;padding-left:1.5rem;position:relative}
+.steps-pay li::before{content:counter(step);counter-increment:step;position:absolute;left:0;font-weight:700;color:var(--accent)}
+.steps-pay{counter-reset:step}
+.success-box{text-align:center;padding:1.5rem 0}
+.success-icon{font-size:3.5rem;margin-bottom:0.8rem}
+.success-h{font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:0.5rem}
+.success-p{color:var(--text2);font-size:0.9rem}
+.wa-btn-modal{display:block;margin-top:1rem;padding:0.85rem;background:#25d366;color:#fff;font-weight:700;font-size:0.95rem;border-radius:var(--radius-sm);text-decoration:none;text-align:center;transition:all 0.2s}
+.wa-btn-modal:hover{background:#1ebe5c}
+
+/* ORDERS TABLE */
+.orders-tbl{width:100%;border-collapse:collapse}
+.orders-tbl th{text-align:left;font-size:0.75rem;font-weight:700;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;padding:0.6rem 1rem;border-bottom:1px solid var(--border)}
+.orders-tbl td{padding:0.9rem 1rem;border-bottom:1px solid var(--border2);font-size:0.88rem;color:var(--text2)}
+.status-badge{display:inline-block;padding:0.22rem 0.75rem;border-radius:99px;font-size:0.72rem;font-weight:700}
+.status-pending{background:rgba(255,200,0,0.1);color:#ffd700;border:1px solid rgba(255,200,0,0.2)}
+.status-paid{background:rgba(0,200,150,0.1);color:var(--accent3);border:1px solid rgba(0,200,150,0.2)}
+.status-rejected{background:rgba(255,94,31,0.1);color:var(--accent2);border:1px solid rgba(255,94,31,0.2)}
+
+/* PROFILE */
+.profile-avatar-lg{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:#000;margin-bottom:1rem}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.2rem;text-align:center}
+.stat-n{font-family:var(--font-display);font-size:1.6rem;font-weight:800;color:var(--accent)}
+.stat-l{font-size:0.75rem;color:var(--text3);margin-top:2px}
+
+/* NOTIFICATIONS */
+.notif{background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.2);border-radius:var(--radius-sm);padding:1rem 1.2rem;font-size:0.88rem;color:var(--text2);margin-bottom:0.7rem}
+.notif strong{color:var(--accent)}
+
+/* WA FLOAT */
+.wa-float{position:fixed;bottom:24px;right:24px;z-index:9998;width:54px;height:54px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 24px rgba(37,211,102,0.4);transition:transform 0.2s;animation:waPulse 3s infinite}
+.wa-float:hover{transform:scale(1.1)}
+.wa-float svg{width:28px;height:28px;fill:#fff}
+@keyframes waPulse{0%,100%{box-shadow:0 4px 24px rgba(37,211,102,0.4)}50%{box-shadow:0 4px 40px rgba(37,211,102,0.7)}}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main{padding:1.5rem}
+  .courses-grid,.store-grid{grid-template-columns:1fr}
+  .stat-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">VG<span>.</span></a>
+    <div class="nav-right">
+      <span class="nav-user" id="navUser">Loading...</span>
+      <button class="btn-sm btn-ghost-sm" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- AUTH GATE -->
+<div class="auth-gate" id="authGate">
+  <div class="auth-box">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <div class="auth-h">Welcome Back! 👋</div>
+      <div class="auth-sub">Apna learning portal access karo</div>
+      <div class="err-msg" id="loginErr"></div>
+      <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+      <button class="btn-full" onclick="doLogin()">Login →</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="registerForm" style="display:none">
+      <div class="auth-h">Join VG Mentorship 🚀</div>
+      <div class="auth-sub">Account banao aur seekhna shuru karo</div>
+      <div class="err-msg" id="regErr"></div>
+      <div class="field"><label>Full Name</label><input type="text" id="regName" placeholder="Rahul Verma"></div>
+      <div class="field"><label>Email</label><input type="email" id="regEmail" placeholder="you@email.com"></div>
+      <div class="field"><label>WhatsApp Number</label><input type="tel" id="regPhone" placeholder="+91 9999999999"></div>
+      <div class="field"><label>Password</label><input type="password" id="regPass" placeholder="Min 6 characters"></div>
+      <button class="btn-full" onclick="doRegister()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN DASHBOARD -->
+<div class="layout" id="dashboardLayout" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="#" class="active" onclick="showPage('home',this)"><span class="si">🏠</span> Dashboard</a>
+    <a href="#" onclick="showPage('courses',this)"><span class="si">📚</span> My Courses</a>
+    <a href="#" onclick="showPage('store',this)"><span class="si">🛒</span> Store</a>
+    <a href="#" onclick="showPage('orders',this)"><span class="si">📋</span> My Orders</a>
+    <div class="sidebar-ttl">Account</div>
+    <a href="#" onclick="showPage('profile',this)"><span class="si">👤</span> Profile</a>
+    <a href="index.html"><span class="si">🌐</span> Back to Website</a>
+    <a href="#" onclick="doLogout()" style="margin-top:auto;color:var(--accent2)"><span class="si">🚪</span> Logout</a>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- HOME PAGE -->
+    <div id="page-home">
+      <div class="page-ttl" id="greetUser">Welcome back!</div>
+      <div class="page-sub">Aaj kya seekhoge? 📊</div>
+
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-n" id="st-enrolled">0</div><div class="stat-l">Enrolled Courses</div></div>
+        <div class="stat-box"><div class="stat-n" id="st-progress">0%</div><div class="stat-l">Avg Progress</div></div>
+        <div class="stat-box"><div class="stat-n" id="st-orders">0</div><div class="stat-l">Total Orders</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-ttl">📢 Notifications</div>
+        <div id="notifArea">
+          <div class="notif"><strong>🎉 Welcome to VG Mentorship!</strong> — Courses tab mein apna enrolled course dekho.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-ttl">💬 Need Help?</div>
+        <div class="card-sub">Vaibhav bhai directly WhatsApp pe available hain</div>
+        <a href="https://api.whatsapp.com/send/?phone=919919917791&text=Hi%20Vaibhav%20bhai%2C%20I%20need%20help%20with%20my%20course&type=phone_number" target="_blank" class="btn-sm btn-accent" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">💬 WhatsApp Support</a>
+      </div>
+
+      <div class="card">
+        <div class="card-ttl">🔥 Continue Learning</div>
+        <div id="continueLearning"><div style="color:var(--text3);font-size:0.9rem">Koi course enrolled nahi hai. Store mein jaao aur enroll karo!</div></div>
+      </div>
+    </div>
+
+    <!-- COURSES PAGE -->
+    <div id="page-courses" style="display:none">
+      <div class="page-ttl">My Courses 📚</div>
+      <div class="page-sub">Tumhare enrolled courses — click karke start karo</div>
+      <div class="courses-grid" id="coursesGrid"></div>
+      <div id="courseDetail" style="display:none">
+        <button onclick="document.getElementById('courseDetail').style.display='none';document.getElementById('coursesGrid').style.display='grid'" style="background:none;border:none;color:var(--accent);cursor:pointer;font-weight:600;margin-bottom:1rem;font-family:var(--font-body);font-size:0.9rem">← Back to Courses</button>
+        <div class="page-ttl" id="detailTitle"></div>
+        <div class="page-sub" id="detailSub"></div>
+        <div class="progress-bar" style="height:8px;margin-bottom:1rem"><div class="progress-fill" id="detailProgress"></div></div>
+        <div class="module-list" id="moduleList"></div>
+      </div>
+    </div>
+
+    <!-- STORE PAGE -->
+    <div id="page-store" style="display:none">
+      <div class="page-ttl">Store 🛒</div>
+      <div class="page-sub">Courses aur E-Books — ek baar buy karo, lifetime access</div>
+      <div class="store-grid" id="storeGrid"></div>
+    </div>
+
+    <!-- ORDERS PAGE -->
+    <div id="page-orders" style="display:none">
+      <div class="page-ttl">My Orders 📋</div>
+      <div class="page-sub">Payment history aur verification status</div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="orders-tbl" id="ordersTable">
+          <thead><tr><th>Order ID</th><th>Product</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+      <div class="card" style="margin-top:1.5rem">
+        <div class="card-ttl">📌 Payment Verification</div>
+        <div class="card-sub">UPI se payment ke baad order automatically pending mein aata hai. Admin verify karne ke baad access milega — usually 2-4 hours.</div>
+        <a href="https://api.whatsapp.com/send/?phone=919919917791&text=Hello%20Vaibhav%20bhai%2C%20I%20have%20made%20payment.%20Please%20verify.&type=phone_number" target="_blank" class="btn-sm btn-accent" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none">💬 Remind on WhatsApp</a>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" style="display:none">
+      <div class="page-ttl">Profile 👤</div>
+      <div class="page-sub">Tera account overview</div>
+      <div class="card">
+        <div class="profile-avatar-lg" id="profileAvatar">VG</div>
+        <div id="profileInfo"></div>
+      </div>
+      <div class="card">
+        <div class="card-ttl">🔗 Useful Links</div>
+        <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:0.5rem">
+          <a href="https://linkedin.com/in/vaibhavgupta" target="_blank" class="btn-sm btn-accent" style="text-decoration:none">LinkedIn</a>
+          <a href="https://portfolio2-0-vmpr.onrender.com/" target="_blank" class="btn-sm btn-ghost-sm" style="text-decoration:none">Portfolio</a>
+          <a href="https://api.whatsapp.com/send/?phone=919919917791" target="_blank" class="btn-sm" style="background:#25d366;color:#fff;text-decoration:none;padding:0.45rem 1.2rem;border-radius:99px;font-weight:700;font-size:0.82rem">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="overlay" id="payOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalBuyForm">
+      <div class="modal-h" id="modalProdTitle">Enroll Now</div>
+      <div class="modal-sub" id="modalProdSub">Secure payment via UPI</div>
+      <div class="amount-show" id="modalAmount">₹999</div>
+      <div class="upi-box">
+        <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.4rem">UPI ID pe payment karo</div>
+        <div class="upi-id">vaibhav@vgmentorship</div>
+        <div class="upi-note">Ya scan QR from Google Pay / PhonePe / Paytm</div>
+      </div>
+      <ol class="steps-pay">
+        <li>Upar diya UPI ID pe exact amount bhejo</li>
+        <li>Transaction ID / Screenshot lo</li>
+        <li>Niche Transaction ID daalo aur submit karo</li>
+        <li>2-4 ghante mein access activate ho jayega</li>
+      </ol>
+      <div class="field"><label>Transaction ID (UTR Number)</label><input type="text" id="txnInput" placeholder="e.g. 426789123456"></div>
+      <button class="btn-full" onclick="submitPayment()" id="payBtn">Submit Payment →</button>
+    </div>
+    <div id="modalSuccess" class="success-box" style="display:none">
+      <div class="success-icon">🎉</div>
+      <div class="success-h">Payment Submitted!</div>
+      <div class="success-p">Vaibhav bhai ko notification mil gayi hai. 2-4 ghante mein tumhara access activate ho jayega.</div>
+      <a class="wa-btn-modal" href="https://api.whatsapp.com/send/?phone=919919917791&text=Hi%20bhai%2C%20I%20just%20submitted%20payment!%20Please%20verify%20my%20enrollment.&type=phone_number" target="_blank">💬 WhatsApp pe confirm karo</a>
+      <button onclick="closeModal();renderOrders()" class="btn-full" style="margin-top:0.8rem;background:transparent;border:1px solid var(--border);color:var(--text2)">View My Orders →</button>
+    </div>
+  </div>
+</div>
+
+<!-- WA FLOAT -->
+<a class="wa-float" href="https://api.whatsapp.com/send/?phone=919919917791&text=Hello%20Vaibhav%20bhai!" target="_blank">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script src="store.js"></script>
+<script>
+let currentProduct = null;
+
+// ─── Init ───────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (VGAuth.isLoggedIn()) showDashboard();
+  else showAuth();
+});
+
+function showAuth() {
+  document.getElementById('authGate').style.display = 'flex';
+  document.getElementById('dashboardLayout').style.display = 'none';
+}
+function showDashboard() {
+  document.getElementById('authGate').style.display = 'none';
+  document.getElementById('dashboardLayout').style.display = 'grid';
+  const user = VGAuth.getUser();
+  document.getElementById('navUser').innerHTML = `Hey, <strong>${user.name.split(' ')[0]}</strong>`;
+  document.getElementById('greetUser').textContent = `Welcome back, ${user.name.split(' ')[0]}! 👋`;
+  renderHome();
+}
+
+// ─── Auth ───────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('loginForm').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab==='register' ? 'block' : 'none';
+}
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const r = VGAuth.login(email, pass);
+  if (!r.ok) { showErr('loginErr', r.msg); return; }
+  showDashboard();
+}
+function doRegister() {
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  if (!name || !email || !pass) { showErr('regErr', 'Sab fields bhari karo!'); return; }
+  if (pass.length < 6) { showErr('regErr', 'Password min 6 characters hona chahiye'); return; }
+  const r = VGAuth.register(name, email, phone, pass);
+  if (!r.ok) { showErr('regErr', r.msg); return; }
+  showDashboard();
+}
+function doLogout() { VGAuth.logout(); showAuth(); }
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ─── Pages ──────────────────────────────────────
+function showPage(name, el) {
+  document.querySelectorAll('.main > div[id^="page-"]').forEach(p => p.style.display='none');
+  document.getElementById('page-'+name).style.display = 'block';
+  document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (name === 'courses') renderCourses();
+  if (name === 'store') renderStore();
+  if (name === 'orders') renderOrders();
+  if (name === 'profile') renderProfile();
+}
+
+// ─── Home ───────────────────────────────────────
+function renderHome() {
+  const orders = VGOrders.getMyOrders();
+  const enrolled = orders.filter(o => o.status === 'paid');
+  document.getElementById('st-enrolled').textContent = enrolled.length;
+  document.getElementById('st-orders').textContent = orders.length;
+
+  let totalPct = 0;
+  enrolled.forEach(o => { totalPct += VGProgress.pct(o.productId); });
+  document.getElementById('st-progress').textContent = enrolled.length ? Math.round(totalPct/enrolled.length)+'%' : '0%';
+
+  // Continue learning
+  const cl = document.getElementById('continueLearning');
+  if (enrolled.length === 0) {
+    cl.innerHTML = `<div style="color:var(--text3);font-size:0.9rem">Koi course enrolled nahi. <a href="#" onclick="showPage('store')" style="color:var(--accent)">Store mein dekho →</a></div>`;
+  } else {
+    cl.innerHTML = enrolled.map(o => {
+      const p = PRODUCTS[o.productId];
+      if (!p || !p.modules) return '';
+      const pct = VGProgress.pct(o.productId);
+      return `<div style="margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem"><span style="font-weight:600">${p.icon} ${p.title}</span><span style="color:var(--text3);font-size:0.82rem">${pct}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <a href="#" onclick="showPage('courses');setTimeout(()=>openCourse('${o.productId}'),100)" style="font-size:0.82rem;color:var(--accent);text-decoration:none">Continue →</a>
+      </div>`;
+    }).join('');
+  }
+
+  // Notifications
+  const notifs = document.getElementById('notifArea');
+  const pending = orders.filter(o => o.status === 'pending');
+  let html = '<div class="notif"><strong>🎉 Welcome!</strong> — Courses tab mein apna enrolled course dekho.</div>';
+  if (pending.length > 0) html += `<div class="notif"><strong>⏳ ${pending.length} payment pending verification</strong> — 2-4 ghante mein active ho jayega. WhatsApp pe confirm karo.</div>`;
+  notifs.innerHTML = html;
+}
+
+// ─── Courses ────────────────────────────────────
+function renderCourses() {
+  const grid = document.getElementById('coursesGrid');
+  const orders = VGOrders.getMyOrders();
+  const enrolledIds = orders.filter(o => o.status === 'paid').map(o => o.productId);
+  const courseProducts = Object.values(PRODUCTS).filter(p => p.type === 'course');
+
+  grid.innerHTML = courseProducts.map(p => {
+    const enrolled = enrolledIds.includes(p.id);
+    const pct = enrolled ? VGProgress.pct(p.id) : 0;
+    return `<div class="course-card${enrolled?'':' locked'}" onclick="${enrolled?`openCourse('${p.id}')`:``}">
+      <div class="course-icon">${p.icon}</div>
+      <div class="course-title">${p.title}</div>
+      <div class="course-sub">${p.subtitle}</div>
+      ${enrolled ? `
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="progress-txt">${pct}% complete</div>
+        <div class="enrolled-badge" style="margin-top:0.7rem">✅ Enrolled</div>
+      ` : `
+        <div class="locked-badge">🔒 Not Enrolled</div>
+        <div style="margin-top:0.8rem"><button class="btn-sm btn-accent" onclick="event.stopPropagation();openBuy('${p.id}')">Buy ₹${p.price.toLocaleString('en-IN')} →</button></div>
+      `}
+    </div>`;
+  }).join('');
+
+  grid.style.display = 'grid';
+  document.getElementById('courseDetail').style.display = 'none';
+}
+
+function openCourse(productId) {
+  const product = PRODUCTS[productId];
+  if (!product) return;
+  document.getElementById('coursesGrid').style.display = 'none';
+  document.getElementById('courseDetail').style.display = 'block';
+  document.getElementById('detailTitle').textContent = product.icon + ' ' + product.title;
+  document.getElementById('detailSub').textContent = product.subtitle;
+  const pct = VGProgress.pct(productId);
+  document.getElementById('detailProgress').style.width = pct + '%';
+  const ml = document.getElementById('moduleList');
+  const progress = VGProgress.get(productId);
+  ml.innerHTML = product.modules.map((mod, mi) => {
+    const done = (progress[mod.id] || []).length;
+    const total = mod.lessons.length;
+    return `<div class="module-item" id="mod-${mod.id}">
+      <div class="module-hdr" onclick="toggleMod('${mod.id}')">
+        <div class="module-num">${mi+1}</div>
+        <div class="module-name">${mod.title}</div>
+        <div class="module-pct">${done}/${total}</div>
+        <div class="module-arr">›</div>
+      </div>
+      <div class="lessons-list">
+        ${mod.lessons.map((lesson, li) => {
+          const isDone = (progress[mod.id] || []).includes(li);
+          return `<div class="lesson-row" onclick="toggleLesson('${productId}','${mod.id}',${li},'${lesson}')">
+            <div class="lesson-check${isDone?' done':''}"></div>
+            <div class="lesson-name">${lesson}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleMod(id) {
+  document.getElementById('mod-'+id).classList.toggle('open');
+}
+function toggleLesson(productId, moduleId, li, name) {
+  VGProgress.complete(productId, moduleId, li);
+  openCourse(productId);
+}
+
+// ─── Store ──────────────────────────────────────
+function renderStore() {
+  const grid = document.getElementById('storeGrid');
+  grid.innerHTML = Object.values(PRODUCTS).map(p => {
+    const enrolled = VGOrders.isEnrolled(p.id);
+    return `<div class="store-card${p.type==='ebook'?' featured-s':''}">
+      <div class="store-icon">${p.icon}</div>
+      <div class="store-title">${p.title}</div>
+      <div class="store-desc">${p.subtitle}${p.type==='ebook'?' — Complete 6-month roadmap with real project guides, checklists & resources.':''}</div>
+      <div class="store-price">₹${p.price.toLocaleString('en-IN')}<span> one-time</span></div>
+      ${enrolled
+        ? (p.type==='ebook'
+            ? `<button class="btn-buy btn-dl">📥 Download E-Book</button>`
+            : `<button class="btn-buy" style="background:var(--accent3);color:#000" onclick="showPage('courses')">📚 Go to Course →</button>`)
+        : `<button class="btn-buy${p.id==='course_ml'?' ml-card':''}" onclick="openBuy('${p.id}')">Buy Now →</button>`
+      }
+    </div>`;
+  }).join('');
+}
+
+// ─── Orders ─────────────────────────────────────
+function renderOrders() {
+  const orders = VGOrders.getMyOrders();
+  const tbody = document.getElementById('ordersBody');
+  if (orders.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:2rem">Koi orders nahi hain abhi</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = orders.map(o => `
+    <tr>
+      <td style="font-family:monospace;font-size:0.78rem">${o.id}</td>
+      <td>${o.productTitle}</td>
+      <td>₹${o.amount.toLocaleString('en-IN')}</td>
+      <td>${new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
+      <td><span class="status-badge status-${o.status}">${o.status.toUpperCase()}</span></td>
+    </tr>`).join('');
+}
+
+// ─── Profile ────────────────────────────────────
+function renderProfile() {
+  const user = VGAuth.getUser();
+  const orders = VGOrders.getMyOrders();
+  const initials = user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('profileAvatar').textContent = initials;
+  document.getElementById('profileInfo').innerHTML = `
+    <div style="margin-bottom:0.5rem"><span style="color:var(--text3);font-size:0.8rem">Name</span><br><strong>${user.name}</strong></div>
+    <div style="margin-bottom:0.5rem"><span style="color:var(--text3);font-size:0.8rem">Email</span><br><strong>${user.email}</strong></div>
+    <div style="margin-bottom:0.5rem"><span style="color:var(--text3);font-size:0.8rem">WhatsApp</span><br><strong>${user.phone || 'Not added'}</strong></div>
+    <div><span style="color:var(--text3);font-size:0.8rem">Member Since</span><br><strong>${new Date(user.createdAt).toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'})}</strong></div>`;
+}
+
+// ─── Payment Modal ───────────────────────────────
+function openBuy(productId) {
+  if (!VGAuth.isLoggedIn()) { switchTab('register'); return; }
+  currentProduct = productId;
+  const p = PRODUCTS[productId];
+  document.getElementById('modalProdTitle').textContent = 'Enroll: ' + p.title;
+  document.getElementById('modalProdSub').textContent = p.subtitle;
+  document.getElementById('modalAmount').textContent = '₹' + p.price.toLocaleString('en-IN');
+  document.getElementById('modalBuyForm').style.display = 'block';
+  document.getElementById('modalSuccess').style.display = 'none';
+  document.getElementById('txnInput').value = '';
+  document.getElementById('payOverlay').classList.add('show');
+}
+function closeModal() { document.getElementById('payOverlay').classList.remove('show'); }
+function submitPayment() {
+  const txn = document.getElementById('txnInput').value.trim();
+  if (!txn) { document.getElementById('txnInput').style.borderColor='red'; setTimeout(()=>document.getElementById('txnInput').style.borderColor='',2000); return; }
+  const btn = document.getElementById('payBtn');
+  btn.textContent = 'Submitting...'; btn.disabled = true;
+  const r = VGOrders.create(currentProduct, txn);
+  setTimeout(() => {
+    if (r.ok) {
+      document.getElementById('modalBuyForm').style.display = 'none';
+      document.getElementById('modalSuccess').style.display = 'block';
+    }
+    btn.textContent = 'Submit Payment →'; btn.disabled = false;
+  }, 1000);
+}
+
+// ─── Close overlay on outside click ─────────────
+document.getElementById('payOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('payOverlay')) closeModal();
+});
+
+// Check URL params for direct page navigation
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('page') === 'store') {
+  window.addEventListener('DOMContentLoaded', () => {
+    if (VGAuth.isLoggedIn()) setTimeout(() => showPage('store'), 100);
+  });
+}
+</script>
+</body>
+</html>

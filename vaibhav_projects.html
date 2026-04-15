@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaibhav Gupta — Live Project Demos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════════════ */
+:root {
+  --bg: #080808;
+  --surface: #101010;
+  --surface2: #181818;
+  --surface3: #202020;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #c8f135;
+  --accent2: #ff5f40;
+  --accent3: #38d9f5;
+  --accent4: #b57bee;
+  --accent5: #ffb347;
+  --text: #f2f2f2;
+  --muted: #666;
+  --muted2: #999;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── Custom Cursor ── */
+.cursor {
+  position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent);
+  transform: translate(-50%,-50%);
+  transition: width 0.2s, height 0.2s, opacity 0.2s;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid rgba(200,241,53,0.4);
+  transform: translate(-50%,-50%);
+  transition: all 0.15s ease;
+}
+.cursor.active { width: 6px; height: 6px; }
+.cursor-ring.active { width: 48px; height: 48px; opacity: 0.5; }
+
+/* ── Noise Texture overlay ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px;
+  opacity: 0.35;
+}
+
+/* ══════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 0 48px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(8,8,8,0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.15rem;
+  color: var(--accent); letter-spacing: -0.02em; text-decoration: none;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+.nav-tabs {
+  display: flex; gap: 4px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+  padding: 4px;
+}
+.nav-tab {
+  padding: 7px 16px; border-radius: 4px; border: none; background: transparent;
+  color: var(--muted); font-family: var(--font-mono); font-size: 0.72rem;
+  letter-spacing: 0.06em; cursor: none; transition: all 0.2s;
+}
+.nav-tab.active { background: var(--surface3); color: var(--text); }
+.nav-tab:hover:not(.active) { color: var(--muted2); }
+
+.nav-badge {
+  font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse-dot 1.5s infinite; }
+
+/* ══════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════ */
+.hero {
+  min-height: 100vh; padding: 64px 48px 0;
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; gap: 60px;
+  position: relative;
+}
+.hero-glow {
+  position: absolute; top: 50%; left: 30%;
+  width: 600px; height: 600px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(200,241,53,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-label {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px; margin-bottom: 24px;
+}
+.hero-label::before { content:''; width: 28px; height: 1px; background: var(--accent); }
+.hero h1 {
+  font-family: var(--font-display); font-size: clamp(2.8rem,4.5vw,5rem);
+  font-weight: 800; line-height: 1.0; letter-spacing: -0.04em; margin-bottom: 24px;
+}
+.hero h1 .line2 { color: var(--accent); display: block; }
+.hero-sub {
+  font-size: 1rem; color: var(--muted2); line-height: 1.9; max-width: 460px; margin-bottom: 40px;
+}
+.hero-sub strong { color: var(--text); font-weight: 400; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  padding: 13px 28px; border-radius: 3px; font-size: 0.82rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  text-decoration: none; cursor: none; transition: all 0.22s;
+  font-family: var(--font-mono);
+}
+.btn-primary { background: var(--accent); color: #080808; font-weight: 600; }
+.btn-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+.btn-ghost { border: 1px solid var(--border2); color: var(--muted2); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+/* Hero visual — terminal-like card */
+.hero-terminal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
+}
+.terminal-header {
+  background: var(--surface2); padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.term-dots { display: flex; gap: 7px; }
+.term-dot { width: 12px; height: 12px; border-radius: 50%; }
+.term-dot.r { background: #ff5f57; }
+.term-dot.y { background: #febc2e; }
+.term-dot.g { background: #28c840; }
+.term-title { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); margin-left: 8px; }
+.terminal-body { padding: 24px; min-height: 320px; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.9; }
+.term-line { display: flex; gap: 12px; }
+.term-prompt { color: var(--accent); flex-shrink: 0; }
+.term-cmd { color: var(--muted2); }
+.term-output { color: var(--text); padding-left: 20px; }
+.term-green { color: #4ade80; }
+.term-yellow { color: var(--accent5); }
+.term-blue { color: var(--accent3); }
+.term-purple { color: var(--accent4); }
+.term-red { color: var(--accent2); }
+.term-cursor { display: inline-block; width: 8px; height: 14px; background: var(--accent); animation: blink 1s infinite; vertical-align: middle; }
+@keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+
+/* ══════════════════════════════════════════════
+   PROJECTS GRID / TABS
+══════════════════════════════════════════════ */
+.projects-section {
+  padding: 80px 48px;
+  position: relative; z-index: 1;
+}
+.section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px; }
+.section-title {
+  font-family: var(--font-display); font-size: clamp(1.8rem,3vw,2.8rem);
+  font-weight: 800; letter-spacing: -0.03em;
+}
+.section-meta { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+
+/* Project cards grid */
+.projects-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 80px;
+}
+.project-card {
+  background: var(--bg); padding: 32px;
+  cursor: none; transition: background 0.25s;
+  position: relative; overflow: hidden;
+}
+.project-card::before {
+  content: ''; position: absolute; inset: 0;
+  opacity: 0; transition: opacity 0.3s;
+}
+.project-card:nth-child(1)::before { background: radial-gradient(ellipse at top left, rgba(200,241,53,0.05), transparent 70%); }
+.project-card:nth-child(2)::before { background: radial-gradient(ellipse at top left, rgba(255,95,64,0.05), transparent 70%); }
+.project-card:nth-child(3)::before { background: radial-gradient(ellipse at top left, rgba(56,217,245,0.05), transparent 70%); }
+.project-card:nth-child(4)::before { background: radial-gradient(ellipse at top left, rgba(181,123,238,0.05), transparent 70%); }
+.project-card:nth-child(5)::before { background: radial-gradient(ellipse at top left, rgba(255,179,71,0.05), transparent 70%); }
+.project-card:nth-child(6)::before { background: radial-gradient(ellipse at top left, rgba(200,241,53,0.05), transparent 70%); }
+.project-card:hover { background: var(--surface); }
+.project-card:hover::before { opacity: 1; }
+
+.project-num {
+  font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted);
+  letter-spacing: 0.15em; margin-bottom: 16px; display: block;
+}
+.project-icon-wrap {
+  width: 48px; height: 48px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.project-card:nth-child(1) .project-icon-wrap { background: rgba(200,241,53,0.08); border-color: rgba(200,241,53,0.2); }
+.project-card:nth-child(2) .project-icon-wrap { background: rgba(255,95,64,0.08); border-color: rgba(255,95,64,0.2); }
+.project-card:nth-child(3) .project-icon-wrap { background: rgba(56,217,245,0.08); border-color: rgba(56,217,245,0.2); }
+.project-card:nth-child(4) .project-icon-wrap { background: rgba(181,123,238,0.08); border-color: rgba(181,123,238,0.2); }
+.project-card:nth-child(5) .project-icon-wrap { background: rgba(255,179,71,0.08); border-color: rgba(255,179,71,0.2); }
+.project-card:nth-child(6) .project-icon-wrap { background: rgba(200,241,53,0.08); border-color: rgba(200,241,53,0.2); }
+
+.project-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
+.project-desc { font-size: 0.82rem; color: var(--muted2); line-height: 1.75; margin-bottom: 20px; }
+.project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.tag { padding: 3px 9px; background: var(--surface2); border-radius: 2px; font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); }
+.project-action {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--muted); transition: color 0.2s; cursor: none;
+  background: none; border: none;
+}
+.project-action:hover { color: var(--accent); }
+.arrow { transition: transform 0.2s; }
+.project-action:hover .arrow { transform: translateX(4px); }
+
+/* ══════════════════════════════════════════════
+   DEMO PANEL
+══════════════════════════════════════════════ */
+.demo-wrapper {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 8px; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+}
+.demo-header {
+  background: var(--surface2); padding: 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+}
+.demo-tab {
+  padding: 16px 24px; font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--muted); cursor: none; border: none; background: none;
+  border-bottom: 2px solid transparent; transition: all 0.2s;
+  letter-spacing: 0.06em; white-space: nowrap;
+}
+.demo-tab.active { color: var(--text); border-bottom-color: var(--accent); background: rgba(200,241,53,0.04); }
+.demo-tab:hover:not(.active) { color: var(--muted2); }
+.demo-body { display: none; }
+.demo-body.active { display: block; }
+
+/* ══════════════════════════════════════════════
+   PROJECT 1 — RECOMMENDATION ENGINE
+══════════════════════════════════════════════ */
+.rec-demo { padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.demo-panel { }
+.demo-panel-title { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 16px; }
+.input-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.demo-input {
+  flex: 1; background: var(--surface3); border: 1px solid var(--border2);
+  color: var(--text); padding: 10px 14px; border-radius: 3px;
+  font-family: var(--font-mono); font-size: 0.8rem; outline: none;
+  transition: border-color 0.2s;
+}
+.demo-input:focus { border-color: var(--accent); }
+.demo-select {
+  background: var(--surface3); border: 1px solid var(--border2);
+  color: var(--text); padding: 10px 14px; border-radius: 3px;
+  font-family: var(--font-mono); font-size: 0.8rem; cursor: none; outline: none;
+}
+.demo-btn {
+  padding: 10px 20px; background: var(--accent); color: #080808;
+  border: none; border-radius: 3px; font-family: var(--font-mono);
+  font-size: 0.78rem; font-weight: 600; cursor: none; transition: opacity 0.2s;
+  letter-spacing: 0.04em; white-space: nowrap;
+}
+.demo-btn:hover { opacity: 0.88; }
+.demo-btn.secondary { background: var(--surface3); color: var(--text); border: 1px solid var(--border2); }
+.demo-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.rec-list { display: flex; flex-direction: column; gap: 8px; }
+.rec-item {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 3px;
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+  transition: border-color 0.2s; animation: slideIn 0.3s ease forwards;
+  opacity: 0;
+}
+@keyframes slideIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:none} }
+.rec-rank { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); width: 20px; flex-shrink: 0; }
+.rec-title { font-size: 0.85rem; flex: 1; }
+.rec-score { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+.rec-genre { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); padding: 2px 7px; background: var(--surface3); border-radius: 2px; }
+
+.metric-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.metric-box {
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 3px;
+  padding: 14px 16px; text-align: center;
+}
+.metric-val { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--accent); line-height: 1; }
+.metric-lbl { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); margin-top: 4px; }
+
+/* ══════════════════════════════════════════════
+   PROJECT 2 — FRAUD DETECTION
+══════════════════════════════════════════════ */
+.fraud-demo { padding: 32px; }
+.fraud-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 24px; }
+.fraud-form { display: flex; flex-direction: column; gap: 12px; }
+.form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-group2 { display: flex; flex-direction: column; gap: 6px; }
+.form-label2 { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+
+.fraud-result { display: flex; flex-direction: column; gap: 16px; }
+.risk-meter { position: relative; height: 8px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
+.risk-fill { height: 100%; border-radius: 4px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+.risk-low .risk-fill { background: #4ade80; }
+.risk-medium .risk-fill { background: var(--accent5); }
+.risk-high .risk-fill { background: var(--accent2); }
+.risk-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border-radius: 3px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600;
+  margin-top: 8px;
+}
+.risk-badge.low { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+.risk-badge.medium { background: rgba(255,179,71,0.1); color: var(--accent5); border: 1px solid rgba(255,179,71,0.2); }
+.risk-badge.high { background: rgba(255,95,64,0.1); color: var(--accent2); border: 1px solid rgba(255,95,64,0.2); }
+.risk-badge.default { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+.fraud-features { display: flex; flex-direction: column; gap: 8px; }
+.feature-bar-row { display: flex; align-items: center; gap: 10px; }
+.feature-label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); width: 140px; flex-shrink: 0; }
+.feature-track { flex: 1; height: 4px; background: var(--surface3); border-radius: 2px; }
+.feature-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.6s ease; }
+.feature-pct { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); width: 36px; text-align: right; }
+
+/* Realtime feed */
+.txn-feed { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; padding-right: 4px; }
+.txn-feed::-webkit-scrollbar { width: 4px; }
+.txn-feed::-webkit-scrollbar-track { background: var(--surface3); }
+.txn-feed::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.txn-row {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+  background: var(--surface2); border-radius: 3px; border-left: 3px solid;
+  font-family: var(--font-mono); font-size: 0.7rem;
+  animation: slideIn 0.3s ease forwards; opacity: 0;
+}
+.txn-row.safe { border-color: #4ade80; }
+.txn-row.fraud { border-color: var(--accent2); }
+.txn-id { color: var(--muted); width: 70px; flex-shrink: 0; }
+.txn-amount { color: var(--text); width: 72px; }
+.txn-status { font-weight: 600; margin-left: auto; }
+.txn-row.safe .txn-status { color: #4ade80; }
+.txn-row.fraud .txn-status { color: var(--accent2); }
+
+/* ══════════════════════════════════════════════
+   PROJECT 3 — CHURN PREDICTION
+══════════════════════════════════════════════ */
+.churn-demo { padding: 32px; display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; }
+.churn-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.churn-result-panel { display: flex; flex-direction: column; gap: 16px; }
+.churn-gauge { position: relative; width: 160px; height: 80px; margin: 0 auto; }
+.churn-gauge svg { overflow: visible; }
+.gauge-track { fill: none; stroke: var(--surface3); stroke-width: 12; stroke-linecap: round; }
+.gauge-fill { fill: none; stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1); }
+.gauge-text { text-anchor: middle; font-family: var(--font-display); font-weight: 800; font-size: 20px; fill: var(--text); }
+.gauge-label { text-anchor: middle; font-family: var(--font-mono); font-size: 8px; fill: var(--muted); }
+
+.segment-list { display: flex; flex-direction: column; gap: 8px; }
+.segment-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface2); border-radius: 3px; border: 1px solid var(--border); }
+.segment-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.segment-name { font-size: 0.82rem; flex: 1; }
+.segment-count { font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted); }
+.segment-pct { font-family: var(--font-mono); font-size: 0.72rem; padding: 2px 8px; border-radius: 2px; }
+
+/* ══════════════════════════════════════════════
+   PROJECT 4 — CHATBOT
+══════════════════════════════════════════════ */
+.chat-demo { padding: 0; display: grid; grid-template-columns: 280px 1fr; height: 520px; }
+.chat-sidebar {
+  background: var(--surface2); border-right: 1px solid var(--border);
+  padding: 20px; display: flex; flex-direction: column; gap: 8px;
+}
+.chat-sidebar-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.15em; margin-bottom: 8px; text-transform: uppercase; }
+.preset-btn {
+  background: var(--surface3); border: 1px solid var(--border); color: var(--muted2);
+  padding: 10px 14px; border-radius: 3px; text-align: left;
+  font-family: var(--font-body); font-size: 0.8rem; cursor: none;
+  transition: all 0.2s; line-height: 1.4;
+}
+.preset-btn:hover { border-color: var(--accent); color: var(--text); }
+.preset-btn.negative { border-color: rgba(255,95,64,0.2); }
+.preset-btn.negative:hover { border-color: var(--accent2); }
+
+.sentiment-legend { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.chat-main { display: flex; flex-direction: column; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.msg { max-width: 75%; animation: slideIn 0.3s ease forwards; opacity: 0; }
+.msg.user { align-self: flex-end; }
+.msg.bot { align-self: flex-start; }
+.msg-bubble {
+  padding: 10px 14px; border-radius: 3px;
+  font-size: 0.85rem; line-height: 1.6;
+}
+.msg.user .msg-bubble { background: rgba(200,241,53,0.12); border: 1px solid rgba(200,241,53,0.2); color: var(--text); }
+.msg.bot .msg-bubble { background: var(--surface2); border: 1px solid var(--border); color: var(--muted2); }
+.msg-meta { font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+.msg.user .msg-meta { justify-content: flex-end; }
+.sentiment-pill { padding: 1px 7px; border-radius: 10px; font-size: 0.58rem; }
+.sentiment-pill.positive { background: rgba(74,222,128,0.15); color: #4ade80; }
+.sentiment-pill.negative { background: rgba(255,95,64,0.15); color: var(--accent2); }
+.sentiment-pill.neutral { background: rgba(255,255,255,0.08); color: var(--muted); }
+.escalated-pill { background: rgba(255,95,64,0.15); color: var(--accent2); padding: 1px 7px; border-radius: 10px; font-size: 0.58rem; }
+
+.chat-input-row {
+  padding: 16px 20px; border-top: 1px solid var(--border);
+  display: flex; gap: 10px; background: var(--surface);
+}
+.chat-input { flex: 1; background: var(--surface2); border: 1px solid var(--border2); color: var(--text); padding: 10px 14px; border-radius: 3px; font-family: var(--font-body); font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
+.chat-input:focus { border-color: var(--accent); }
+.chat-send { padding: 10px 20px; background: var(--accent); color: #080808; border: none; border-radius: 3px; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; cursor: none; }
+
+/* ══════════════════════════════════════════════
+   PROJECT 5 — MEDICAL CNN
+══════════════════════════════════════════════ */
+.cnn-demo { padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.canvas-wrap { position: relative; }
+.scan-canvas {
+  width: 100%; aspect-ratio: 1; background: var(--surface3);
+  border: 1px solid var(--border); border-radius: 4px; display: block;
+  cursor: crosshair;
+}
+.canvas-overlay {
+  position: absolute; inset: 0; pointer-events: none; border-radius: 4px;
+  overflow: hidden;
+}
+.heatmap-layer { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s; }
+.scan-controls { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+.cnn-results { display: flex; flex-direction: column; gap: 16px; }
+.prediction-card {
+  padding: 20px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.pred-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.pred-class { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; }
+.pred-class.normal { color: #4ade80; }
+.pred-class.anomaly { color: var(--accent2); }
+.confidence-track { height: 6px; background: var(--surface3); border-radius: 3px; }
+.confidence-fill { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+.confidence-fill.normal { background: #4ade80; }
+.confidence-fill.anomaly { background: var(--accent2); }
+
+.arch-viz { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 16px; }
+.arch-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+.arch-layers { display: flex; flex-direction: column; gap: 4px; }
+.arch-layer {
+  display: flex; align-items: center; gap: 10px; padding: 7px 12px;
+  border-radius: 2px; transition: background 0.2s;
+  font-family: var(--font-mono); font-size: 0.7rem;
+}
+.arch-layer:hover { background: var(--surface3); }
+.layer-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.layer-name { flex: 1; color: var(--muted2); }
+.layer-shape { color: var(--muted); font-size: 0.62rem; }
+
+/* ══════════════════════════════════════════════
+   PROJECT 6 — SALES ANALYTICS
+══════════════════════════════════════════════ */
+.sales-demo { padding: 32px; }
+.kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 24px; }
+.kpi-box { background: var(--surface2); padding: 18px 20px; text-align: center; }
+.kpi-val { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.kpi-name { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.08em; }
+
+.chart-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
+.chart-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 20px; }
+.chart-title { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; }
+
+/* Bar chart */
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: flex; align-items: center; gap: 10px; }
+.bar-name { font-size: 0.78rem; width: 120px; flex-shrink: 0; color: var(--muted2); }
+.bar-track { flex: 1; height: 6px; background: var(--surface3); border-radius: 3px; }
+.bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+.bar-val { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); width: 60px; text-align: right; }
+
+/* Donut chart */
+.donut-wrap { position: relative; width: 140px; height: 140px; margin: 0 auto 16px; }
+.donut-wrap svg { transform: rotate(-90deg); }
+.donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.donut-center-val { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; }
+.donut-center-lbl { font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.donut-legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; }
+.donut-legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.donut-legend-pct { margin-left: auto; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+
+/* Cohort mini heatmap */
+.cohort-grid { display: grid; gap: 3px; }
+.cohort-cell {
+  height: 22px; border-radius: 2px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 0.6rem; color: rgba(255,255,255,0.7);
+  transition: transform 0.15s;
+}
+.cohort-cell:hover { transform: scale(1.1); z-index: 1; }
+
+/* ══════════════════════════════════════════════
+   STATS FOOTER BAR
+══════════════════════════════════════════════ */
+.stats-bar {
+  padding: 0 48px; margin: 0 48px;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: 4px;
+  margin-bottom: 80px;
+}
+.stat-box { background: var(--bg); padding: 28px 24px; }
+.stat-num { font-family: var(--font-display); font-size: 2.4rem; font-weight: 800; color: var(--accent); letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
+.stat-lbl { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* ══════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════ */
+footer { padding: 32px 48px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.footer-logo { font-family: var(--font-display); font-weight: 800; color: var(--accent); font-size: 1.1rem; }
+.footer-info { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+.footer-links { display: flex; gap: 20px; }
+.footer-link { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.footer-link:hover { color: var(--accent); }
+
+/* ══════════════════════════════════════════════
+   ANIMATIONS & UTILITIES
+══════════════════════════════════════════════ */
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+.stagger-1 { transition-delay: 0.1s; }
+.stagger-2 { transition-delay: 0.2s; }
+.stagger-3 { transition-delay: 0.3s; }
+
+.processing { animation: processing-pulse 1.5s infinite; }
+@keyframes processing-pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Mobile */
+@media(max-width:900px){
+  nav{padding:0 20px}
+  .hero{grid-template-columns:1fr;padding:80px 20px 0}
+  .hero-terminal{display:none}
+  .projects-section{padding:60px 20px}
+  .projects-grid{grid-template-columns:1fr}
+  .rec-demo,.fraud-grid,.churn-demo,.cnn-demo{grid-template-columns:1fr}
+  .chart-grid{grid-template-columns:1fr}
+  .kpi-strip{grid-template-columns:1fr 1fr}
+  .stats-bar{grid-template-columns:1fr 1fr;margin:0 20px 60px}
+  footer{flex-direction:column;gap:16px;padding:24px 20px;text-align:center}
+  .chat-demo{grid-template-columns:1fr;height:auto}
+  .chat-sidebar{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    VG. Projects
+  </a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="scrollToSection('projects')">01 Demos</button>
+    <button class="nav-tab" onclick="scrollToSection('stats')">02 Results</button>
+  </div>
+  <div class="nav-badge">
+    <div class="live-dot"></div>
+    All demos running live
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div>
+    <div class="hero-label">Portfolio · 6 Live Projects</div>
+    <h1>
+      Real ML.
+      <span class="line2">Live Demos.</span>
+    </h1>
+    <p class="hero-sub">
+      <strong>Vaibhav Gupta</strong> — IIT Kanpur & IIT Delhi Certified AI Engineer.
+      Every model below runs in your browser — no server, no backend. Pure JavaScript ML simulations with real algorithms.
+    </p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn btn-primary">Explore Projects ↓</a>
+      <a href="https://portfolio2-0-vmpr.onrender.com/" target="_blank" class="btn btn-ghost">Full Portfolio →</a>
+    </div>
+  </div>
+  <div class="hero-terminal">
+    <div class="terminal-header">
+      <div class="term-dots"><div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div></div>
+      <div class="term-title">vaibhav@ai-engineer ~ projects</div>
+    </div>
+    <div class="terminal-body" id="terminalBody">
+      <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"> python recommender.py</span></div>
+      <div class="term-output term-green">✓ SVD Model RMSE=0.8412 MAE=0.6203</div>
+      <div class="term-output term-blue">✓ Content-Based: 500 movies indexed</div>
+      <div class="term-output term-green">✓ Hybrid engine ready (+20% accuracy)</div>
+      <br>
+      <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"> python fraud_pipeline.py</span></div>
+      <div class="term-output term-yellow">⟳ Training XGBoost ensemble...</div>
+      <div class="term-output term-green">✓ Precision=0.9512 ROC-AUC=0.9834</div>
+      <div class="term-output term-green">✓ SHAP explainability loaded</div>
+      <br>
+      <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"> python churn_prediction.py</span></div>
+      <div class="term-output term-green">✓ Accuracy=88.3% | 12% attrition ↓</div>
+      <br>
+      <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"> python chatbot.py</span></div>
+      <div class="term-output term-purple">✓ BERT sentiment loaded (DistilBERT)</div>
+      <div class="term-output term-green">✓ 60% automation rate achieved</div>
+      <br>
+      <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"> python medical_cnn.py</span></div>
+      <div class="term-output term-blue">✓ EfficientNetB0 + Grad-CAM ready</div>
+      <div class="term-output term-green">✓ 92% accuracy on anomaly detection</div>
+      <br>
+      <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"> python sales_analytics.py</span></div>
+      <div class="term-output term-green">✓ 50K orders · ₹2.4Cr revenue analysed</div>
+      <div class="term-output"> <span class="term-cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJECTS SECTION ═══ -->
+<section class="projects-section" id="projects">
+  <div class="section-header reveal">
+    <h2 class="section-title">Live Project Demos</h2>
+    <div class="section-meta">Click any project → interact live</div>
+  </div>
+
+  <!-- Project Cards -->
+  <div class="projects-grid reveal">
+    <div class="project-card" onclick="switchDemo(0)">
+      <span class="project-num">PROJECT / 01</span>
+      <div class="project-icon-wrap">🎬</div>
+      <div class="project-name">Recommendation System</div>
+      <div class="project-desc">Hybrid SVD + Content-Based engine. 20% accuracy improvement over baseline.</div>
+      <div class="project-tags"><span class="tag">Scikit-learn</span><span class="tag">Surprise SVD</span><span class="tag">Flask</span><span class="tag">Cosine Similarity</span></div>
+      <button class="project-action">Try Live Demo <span class="arrow">→</span></button>
+    </div>
+    <div class="project-card" onclick="switchDemo(1)">
+      <span class="project-num">PROJECT / 02</span>
+      <div class="project-icon-wrap">🔍</div>
+      <div class="project-name">Fraud Detection Pipeline</div>
+      <div class="project-desc">XGBoost ensemble with SMOTE. 95% precision, minimised false positives.</div>
+      <div class="project-tags"><span class="tag">XGBoost</span><span class="tag">SMOTE</span><span class="tag">SHAP</span><span class="tag">SQL</span></div>
+      <button class="project-action">Try Live Demo <span class="arrow">→</span></button>
+    </div>
+    <div class="project-card" onclick="switchDemo(2)">
+      <span class="project-num">PROJECT / 03</span>
+      <div class="project-icon-wrap">📉</div>
+      <div class="project-name">Customer Churn Prediction</div>
+      <div class="project-desc">Telecom churn model. 88% accuracy, 12% attrition reduction via dashboards.</div>
+      <div class="project-tags"><span class="tag">XGBoost</span><span class="tag">GridSearchCV</span><span class="tag">Power BI</span><span class="tag">SHAP</span></div>
+      <button class="project-action">Try Live Demo <span class="arrow">→</span></button>
+    </div>
+    <div class="project-card" onclick="switchDemo(3)">
+      <span class="project-num">PROJECT / 04</span>
+      <div class="project-icon-wrap">💬</div>
+      <div class="project-name">Sentiment Analysis Chatbot</div>
+      <div class="project-desc">BERT-powered NLP chatbot. 60% query automation, smart escalation routing.</div>
+      <div class="project-tags"><span class="tag">BERT</span><span class="tag">Transformers</span><span class="tag">NLP</span><span class="tag">Flask</span></div>
+      <button class="project-action">Try Live Demo <span class="arrow">→</span></button>
+    </div>
+    <div class="project-card" onclick="switchDemo(4)">
+      <span class="project-num">PROJECT / 05</span>
+      <div class="project-icon-wrap">🏥</div>
+      <div class="project-name">Medical Image Classification</div>
+      <div class="project-desc">EfficientNetB0 CNN for anomaly detection. 92% accuracy with Grad-CAM explainability.</div>
+      <div class="project-tags"><span class="tag">TensorFlow</span><span class="tag">EfficientNetB0</span><span class="tag">Grad-CAM</span><span class="tag">Transfer Learning</span></div>
+      <button class="project-action">Try Live Demo <span class="arrow">→</span></button>
+    </div>
+    <div class="project-card" onclick="switchDemo(5)">
+      <span class="project-num">PROJECT / 06</span>
+      <div class="project-icon-wrap">📊</div>
+      <div class="project-name">Sales Analytics BI</div>
+      <div class="project-desc">End-to-end ETL + SQL analytics. 50K orders, KPI dashboards, cohort retention.</div>
+      <div class="project-tags"><span class="tag">Pandas</span><span class="tag">SQLite</span><span class="tag">Matplotlib</span><span class="tag">Power BI</span></div>
+      <button class="project-action">Try Live Demo <span class="arrow">→</span></button>
+    </div>
+  </div>
+
+  <!-- Demo Panel -->
+  <div class="demo-wrapper reveal">
+    <div class="demo-header">
+      <button class="demo-tab active" onclick="switchDemo(0)">🎬 Recommender</button>
+      <button class="demo-tab" onclick="switchDemo(1)">🔍 Fraud Detection</button>
+      <button class="demo-tab" onclick="switchDemo(2)">📉 Churn</button>
+      <button class="demo-tab" onclick="switchDemo(3)">💬 Chatbot</button>
+      <button class="demo-tab" onclick="switchDemo(4)">🏥 Medical CNN</button>
+      <button class="demo-tab" onclick="switchDemo(5)">📊 Sales BI</button>
+    </div>
+
+    <!-- ── DEMO 0: RECOMMENDER ── -->
+    <div class="demo-body active" id="demo-0">
+      <div class="rec-demo">
+        <div class="demo-panel">
+          <div class="demo-panel-title">🎬 Hybrid Recommendation Engine</div>
+          <div style="margin-bottom:12px;">
+            <div class="form-label2" style="margin-bottom:6px;">Select a movie you liked:</div>
+            <select class="demo-input demo-select" id="rec-movie" style="width:100%;margin-bottom:10px;">
+              <option value="0">The Dark Knight (Action/Crime)</option>
+              <option value="1">Inception (Sci-Fi/Thriller)</option>
+              <option value="2">The Notebook (Romance/Drama)</option>
+              <option value="3">Interstellar (Sci-Fi/Adventure)</option>
+              <option value="4">Chhichhore (Comedy/Drama)</option>
+              <option value="5">3 Idiots (Comedy/Drama)</option>
+              <option value="6">Parasite (Thriller/Drama)</option>
+            </select>
+            <div class="form-label2" style="margin-bottom:6px;">Algorithm:</div>
+            <select class="demo-input demo-select" id="rec-algo" style="width:100%;margin-bottom:12px;">
+              <option value="hybrid">Hybrid (SVD + Content-Based)</option>
+              <option value="cf">Collaborative Filtering (SVD)</option>
+              <option value="cb">Content-Based (Genre Cosine)</option>
+            </select>
+            <button class="demo-btn" onclick="runRecommender()" style="width:100%">▶ Run Recommender</button>
+          </div>
+          <div class="metric-row">
+            <div class="metric-box"><div class="metric-val" id="rec-rmse">0.84</div><div class="metric-lbl">RMSE</div></div>
+            <div class="metric-box"><div class="metric-val" id="rec-acc">+20%</div><div class="metric-lbl">Accuracy Gain</div></div>
+            <div class="metric-box"><div class="metric-val">SVD</div><div class="metric-lbl">CF Engine</div></div>
+            <div class="metric-box"><div class="metric-val">cos</div><div class="metric-lbl">CB Similarity</div></div>
+          </div>
+        </div>
+        <div class="demo-panel">
+          <div class="demo-panel-title">Top 8 Recommendations</div>
+          <div class="rec-list" id="rec-list">
+            <div style="color:var(--muted);font-family:var(--font-mono);font-size:0.8rem;padding:24px 0;text-align:center;">Select a movie and click Run →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMO 1: FRAUD DETECTION ── -->
+    <div class="demo-body" id="demo-1">
+      <div class="fraud-demo">
+        <div class="fraud-grid">
+          <div>
+            <div class="demo-panel-title">🔍 Transaction Risk Analyser</div>
+            <div class="fraud-form">
+              <div class="form-row2">
+                <div class="form-group2">
+                  <div class="form-label2">Amount (₹)</div>
+                  <input type="number" class="demo-input" id="f-amount" value="5000" min="1" max="100000">
+                </div>
+                <div class="form-group2">
+                  <div class="form-label2">Hour of Day</div>
+                  <input type="number" class="demo-input" id="f-hour" value="2" min="0" max="23">
+                </div>
+              </div>
+              <div class="form-row2">
+                <div class="form-group2">
+                  <div class="form-label2">Txns in Last 1hr</div>
+                  <input type="number" class="demo-input" id="f-velocity" value="12" min="0" max="50">
+                </div>
+                <div class="form-group2">
+                  <div class="form-label2">Distance from Home (km)</div>
+                  <input type="number" class="demo-input" id="f-distance" value="800" min="0">
+                </div>
+              </div>
+              <div class="form-row2">
+                <div class="form-group2">
+                  <div class="form-label2">International?</div>
+                  <select class="demo-input demo-select" id="f-intl">
+                    <option value="1">Yes</option><option value="0">No</option>
+                  </select>
+                </div>
+                <div class="form-group2">
+                  <div class="form-label2">Card Age (days)</div>
+                  <input type="number" class="demo-input" id="f-cardage" value="5" min="0">
+                </div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="demo-btn" onclick="runFraud()" style="flex:1">▶ Analyse Risk</button>
+                <button class="demo-btn secondary" onclick="loadFraudPreset('legit')">Legit Txn</button>
+                <button class="demo-btn secondary" onclick="loadFraudPreset('fraud')">Fraud Txn</button>
+              </div>
+            </div>
+          </div>
+          <div class="fraud-result">
+            <div class="demo-panel-title">Risk Assessment</div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);margin-bottom:6px;">
+                <span>Fraud Probability</span><span id="fraud-pct">—</span>
+              </div>
+              <div class="risk-meter" id="risk-meter"><div class="risk-fill" id="risk-fill" style="width:0%"></div></div>
+              <div id="risk-badge" class="risk-badge default" style="margin-top:10px;">⟳ Awaiting analysis</div>
+            </div>
+            <div class="demo-panel-title" style="margin-top:4px;">SHAP Feature Importance</div>
+            <div class="fraud-features" id="shap-features">
+              <div style="color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;">Run analysis to see SHAP values</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="demo-panel-title" style="margin-bottom:10px;">📡 Live Transaction Feed <span style="font-size:0.65rem;color:var(--muted);">(auto-generating)</span></div>
+          <div class="txn-feed" id="txn-feed"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMO 2: CHURN ── -->
+    <div class="demo-body" id="demo-2">
+      <div class="churn-demo">
+        <div>
+          <div class="demo-panel-title">📉 Customer Churn Predictor</div>
+          <div class="churn-form-grid">
+            <div class="form-group2">
+              <div class="form-label2">Tenure (months)</div>
+              <input type="range" class="demo-input" id="c-tenure" min="0" max="72" value="5" oninput="updateChurnSlider('tenure',this.value)" style="padding:6px 0">
+              <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent)" id="c-tenure-val">5 months</div>
+            </div>
+            <div class="form-group2">
+              <div class="form-label2">Monthly Charges (₹)</div>
+              <input type="range" class="demo-input" id="c-monthly" min="20" max="120" value="95" oninput="updateChurnSlider('monthly',this.value)" style="padding:6px 0">
+              <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--accent)" id="c-monthly-val">₹95</div>
+            </div>
+            <div class="form-group2">
+              <div class="form-label2">Contract Type</div>
+              <select class="demo-input demo-select" id="c-contract" onchange="predictChurn()">
+                <option value="0">Month-to-Month</option>
+                <option value="1">One Year</option>
+                <option value="2">Two Year</option>
+              </select>
+            </div>
+            <div class="form-group2">
+              <div class="form-label2">Internet Service</div>
+              <select class="demo-input demo-select" id="c-internet" onchange="predictChurn()">
+                <option value="2">Fiber Optic</option>
+                <option value="1">DSL</option>
+                <option value="0">No Service</option>
+              </select>
+            </div>
+            <div class="form-group2">
+              <div class="form-label2">Tech Support</div>
+              <select class="demo-input demo-select" id="c-support" onchange="predictChurn()">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+            <div class="form-group2">
+              <div class="form-label2">Paperless Billing</div>
+              <select class="demo-input demo-select" id="c-paperless" onchange="predictChurn()">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+          <button class="demo-btn" onclick="predictChurn()" style="width:100%;margin-top:16px">▶ Predict Churn Risk</button>
+          <div style="margin-top:20px;">
+            <div class="demo-panel-title">Customer Segments</div>
+            <div class="segment-list" id="segment-list">
+              <div class="segment-row"><div class="segment-dot" style="background:var(--accent2)"></div><div class="segment-name">High Risk (Churn > 60%)</div><div class="segment-count" id="seg-high">847</div><div class="segment-pct" style="background:rgba(255,95,64,0.1);color:var(--accent2)">12%</div></div>
+              <div class="segment-row"><div class="segment-dot" style="background:var(--accent5)"></div><div class="segment-name">Medium Risk (30–60%)</div><div class="segment-count" id="seg-med">1,420</div><div class="segment-pct" style="background:rgba(255,179,71,0.1);color:var(--accent5)">20%</div></div>
+              <div class="segment-row"><div class="segment-dot" style="background:#4ade80"></div><div class="segment-name">Low Risk (< 30%)</div><div class="segment-count" id="seg-low">4,776</div><div class="segment-pct" style="background:rgba(74,222,128,0.1);color:#4ade80">68%</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="churn-result-panel">
+          <div class="demo-panel-title">Churn Probability Gauge</div>
+          <div class="churn-gauge" style="width:200px;height:110px">
+            <svg width="200" height="110" viewBox="0 0 200 110">
+              <path d="M 20 100 A 80 80 0 0 1 180 100" class="gauge-track" stroke-width="14"/>
+              <path id="gauge-fill-path" d="M 20 100 A 80 80 0 0 1 180 100" class="gauge-fill" stroke="var(--accent2)" stroke-width="14" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+              <text x="100" y="95" class="gauge-text" id="gauge-pct-text" style="font-family:var(--font-display);font-weight:800;font-size:24px;fill:var(--text);text-anchor:middle">—%</text>
+              <text x="100" y="110" class="gauge-label" style="font-family:var(--font-mono);font-size:9px;fill:var(--muted);text-anchor:middle">CHURN RISK</text>
+            </svg>
+          </div>
+          <div id="churn-result-card" style="padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.78rem;">
+            Adjust sliders to predict in real-time →
+          </div>
+          <div>
+            <div class="demo-panel-title">Top Churn Drivers</div>
+            <div id="churn-drivers" class="fraud-features">
+              <div style="color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;">Run prediction to see drivers</div>
+            </div>
+          </div>
+          <div style="padding:14px;background:rgba(200,241,53,0.05);border:1px solid rgba(200,241,53,0.15);border-radius:3px;">
+            <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);margin-bottom:4px;">MODEL METRICS</div>
+            <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted2);">Accuracy: <strong style="color:var(--text)">88.3%</strong> · ROC-AUC: <strong style="color:var(--text)">0.921</strong> · PR-AUC: <strong style="color:var(--text)">0.731</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMO 3: CHATBOT ── -->
+    <div class="demo-body" id="demo-3">
+      <div class="chat-demo">
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-title">Quick Presets</div>
+          <button class="preset-btn" onclick="sendPreset('Hello! I need help with my account.')">👋 Greeting</button>
+          <button class="preset-btn" onclick="sendPreset('What subscription plans do you offer?')">💡 Product Info</button>
+          <button class="preset-btn" onclick="sendPreset('My payment failed and I need a refund urgently.')">💳 Billing Issue</button>
+          <button class="preset-btn negative" onclick="sendPreset('This is terrible! The app keeps crashing and I am really frustrated with this awful service.')">😠 Frustrated User</button>
+          <button class="preset-btn negative" onclick="sendPreset('I want to cancel everything. This is the worst product I have ever used. Give me a refund now.')">🚨 Escalation</button>
+          <button class="preset-btn" onclick="sendPreset('Thanks for the help! Everything is working great now.')">✅ Positive Feedback</button>
+          <div class="sentiment-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div>Positive sentiment</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>Negative → Escalated</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--muted)"></div>Neutral → Auto-handled</div>
+          </div>
+        </div>
+        <div class="chat-main">
+          <div class="chat-messages" id="chat-messages">
+            <div class="msg bot">
+              <div class="msg-bubble">Hello! 👋 I'm VG's AI Support Bot powered by BERT sentiment analysis. Try typing a message or use a preset on the left!</div>
+              <div class="msg-meta"><span class="sentiment-pill neutral">neutral</span><span>Auto-handled</span></div>
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Type your message..." onkeypress="if(event.key==='Enter')sendChat()">
+            <button class="chat-send demo-btn" onclick="sendChat()">Send →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMO 4: MEDICAL CNN ── -->
+    <div class="demo-body" id="demo-4">
+      <div class="cnn-demo">
+        <div>
+          <div class="demo-panel-title">🏥 Medical Image Analyser — Draw or Generate</div>
+          <div class="canvas-wrap">
+            <canvas class="scan-canvas" id="scanCanvas" width="400" height="400"></canvas>
+            <div class="canvas-overlay">
+              <canvas id="heatmapCanvas" width="400" height="400" class="heatmap-layer" style="position:absolute;top:0;left:0;width:100%;height:100%;"></canvas>
+            </div>
+          </div>
+          <div class="scan-controls">
+            <button class="demo-btn" onclick="generateScan('normal')">Generate Normal Scan</button>
+            <button class="demo-btn secondary" onclick="generateScan('anomaly')">Generate Anomaly</button>
+            <button class="demo-btn secondary" onclick="clearCanvas()">Clear</button>
+            <button class="demo-btn secondary" onclick="toggleHeatmap()">Grad-CAM</button>
+          </div>
+          <div style="margin-top:10px;font-family:var(--font-mono);font-size:0.65rem;color:var(--muted)">
+            Draw on canvas or generate synthetic scans · Grad-CAM shows model attention areas
+          </div>
+        </div>
+        <div class="cnn-results">
+          <div class="demo-panel-title">Prediction Output</div>
+          <div class="prediction-card">
+            <div class="pred-label">Classified As</div>
+            <div class="pred-class" id="pred-class" style="color:var(--muted)">— Awaiting scan —</div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);margin-bottom:6px;">
+                <span>Confidence</span><span id="pred-conf">—</span>
+              </div>
+              <div class="confidence-track"><div class="confidence-fill normal" id="conf-fill" style="width:0%"></div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted)">P(Normal)</div>
+              <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted)" id="p-normal">—</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted)">P(Anomaly)</div>
+              <div style="font-family:var(--font-mono);font-size:0.68rem;color:var(--muted)" id="p-anomaly">—</div>
+            </div>
+          </div>
+          <div class="arch-viz">
+            <div class="arch-title">EfficientNetB0 Architecture</div>
+            <div class="arch-layers">
+              <div class="arch-layer"><div class="layer-dot" style="background:#38d9f5"></div><span class="layer-name">Input + Augmentation</span><span class="layer-shape">224×224×3</span></div>
+              <div class="arch-layer"><div class="layer-dot" style="background:#b57bee"></div><span class="layer-name">EfficientNetB0 Stem</span><span class="layer-shape">112×112×32</span></div>
+              <div class="arch-layer"><div class="layer-dot" style="background:#b57bee"></div><span class="layer-name">MBConv Blocks ×16</span><span class="layer-shape">7×7×320</span></div>
+              <div class="arch-layer" id="top-conv-layer"><div class="layer-dot" style="background:var(--accent2)"></div><span class="layer-name">top_conv (Grad-CAM)</span><span class="layer-shape">7×7×1280</span></div>
+              <div class="arch-layer"><div class="layer-dot" style="background:var(--accent5)"></div><span class="layer-name">GlobalAvgPool + BN</span><span class="layer-shape">1280</span></div>
+              <div class="arch-layer"><div class="layer-dot" style="background:var(--accent5)"></div><span class="layer-name">Dense(256) + Drop(0.4)</span><span class="layer-shape">256</span></div>
+              <div class="arch-layer"><div class="layer-dot" style="background:var(--accent)"></div><span class="layer-name">Output — Sigmoid</span><span class="layer-shape">1</span></div>
+            </div>
+          </div>
+          <div style="padding:12px 14px;background:rgba(200,241,53,0.05);border:1px solid rgba(200,241,53,0.15);border-radius:3px;">
+            <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);margin-bottom:2px;">ACHIEVED METRICS</div>
+            <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted2)">Accuracy: <b style="color:var(--text)">92%</b> · ROC-AUC: <b style="color:var(--text)">0.97</b> · Params: <b style="color:var(--text)">5.3M</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DEMO 5: SALES BI ── -->
+    <div class="demo-body" id="demo-5">
+      <div class="sales-demo">
+        <div class="kpi-strip">
+          <div class="kpi-box"><div class="kpi-val" style="color:var(--accent)">₹2.41Cr</div><div class="kpi-name">Total Revenue</div></div>
+          <div class="kpi-box"><div class="kpi-val" style="color:var(--accent3)">50,000</div><div class="kpi-name">Total Orders</div></div>
+          <div class="kpi-box"><div class="kpi-val" style="color:var(--accent4)">₹4,820</div><div class="kpi-name">Avg Order Value</div></div>
+          <div class="kpi-box"><div class="kpi-val" style="color:#4ade80">+8.3%</div><div class="kpi-name">MoM Growth</div></div>
+        </div>
+        <div class="chart-grid">
+          <div>
+            <div class="chart-card">
+              <div class="chart-title">Revenue by Category</div>
+              <div class="bar-chart" id="cat-chart"></div>
+            </div>
+            <div class="chart-card" style="margin-top:16px">
+              <div class="chart-title">Monthly Revenue Trend (Last 12 Months)</div>
+              <canvas id="trend-canvas" height="80" style="width:100%"></canvas>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="chart-card">
+              <div class="chart-title">Channel Mix</div>
+              <div class="donut-wrap">
+                <svg width="140" height="140" viewBox="0 0 140 140">
+                  <circle cx="70" cy="70" r="50" class="gauge-track" stroke-width="20"/>
+                  <circle id="donut-online" cx="70" cy="70" r="50" fill="none" stroke="var(--accent)" stroke-width="20" stroke-dasharray="314.16" stroke-dashoffset="0" style="transition:stroke-dashoffset 1s ease"/>
+                  <circle id="donut-mobile" cx="70" cy="70" r="50" fill="none" stroke="var(--accent3)" stroke-width="20" stroke-dasharray="314.16" stroke-dashoffset="0"/>
+                  <circle id="donut-store" cx="70" cy="70" r="50" fill="none" stroke="var(--accent4)" stroke-width="20" stroke-dasharray="314.16" stroke-dashoffset="0"/>
+                  <circle id="donut-partner" cx="70" cy="70" r="50" fill="none" stroke="var(--accent5)" stroke-width="20" stroke-dasharray="314.16" stroke-dashoffset="0"/>
+                </svg>
+                <div class="donut-center"><div class="donut-center-val" style="font-size:1rem">4 Ch.</div><div class="donut-center-lbl">Channels</div></div>
+              </div>
+              <div class="donut-legend">
+                <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--accent)"></div>Online<div class="donut-legend-pct">45%</div></div>
+                <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--accent3)"></div>Mobile App<div class="donut-legend-pct">30%</div></div>
+                <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--accent4)"></div>In-Store<div class="donut-legend-pct">15%</div></div>
+                <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--accent5)"></div>Partner<div class="donut-legend-pct">10%</div></div>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Cohort Retention (6-Month)</div>
+              <div id="cohort-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STATS BAR ═══ -->
+<div class="stats-bar reveal" id="stats">
+  <div class="stat-box"><div class="stat-num">70+</div><div class="stat-lbl">Students Trained</div></div>
+  <div class="stat-box"><div class="stat-num">85%</div><div class="stat-lbl">Placement Rate</div></div>
+  <div class="stat-box"><div class="stat-num">6</div><div class="stat-lbl">Live Projects</div></div>
+  <div class="stat-box"><div class="stat-num">4.9★</div><div class="stat-lbl">Student Rating</div></div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-logo">VG.</div>
+  <div class="footer-info">Vaibhav Gupta · IIT Kanpur & IIT Delhi Certified · AI Engineer · Lucknow</div>
+  <div class="footer-links">
+    <a href="https://linkedin.com/in/vaibhavgupta" target="_blank" class="footer-link">LinkedIn →</a>
+    <a href="https://wa.me/919919917791" target="_blank" class="footer-link">WhatsApp →</a>
+    <a href="https://portfolio2-0-vmpr.onrender.com/" target="_blank" class="footer-link">Full Portfolio →</a>
+  </div>
+</footer>
+
+<script>
+/* ════════════════════════════════════════════
+   CURSOR
+════════════════════════════════════════════ */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursorRing');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+  setTimeout(() => { ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px'; }, 80);
+});
+document.querySelectorAll('button,a,[onclick]').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.classList.add('active'); ring.classList.add('active'); });
+  el.addEventListener('mouseleave', () => { cursor.classList.remove('active'); ring.classList.remove('active'); });
+});
+
+/* ════════════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════════════ */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, { threshold: 0.06 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+
+/* ════════════════════════════════════════════
+   DEMO SWITCHER
+════════════════════════════════════════════ */
+function switchDemo(idx) {
+  document.querySelectorAll('.demo-body').forEach((d,i) => d.classList.toggle('active', i===idx));
+  document.querySelectorAll('.demo-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.project-card').forEach((c,i) => {
+    c.style.outline = i===idx ? '2px solid var(--accent)' : 'none';
+    c.style.outlineOffset = i===idx ? '-2px' : '0';
+  });
+  if (idx===1 && !window._fraudFeedRunning) startFraudFeed();
+  if (idx===5) { initSalesCharts(); initDonut(); buildCohort(); }
+  if (idx===4) initCanvas();
+}
+
+/* ════════════════════════════════════════════
+   PROJECT 1 — RECOMMENDER
+════════════════════════════════════════════ */
+const MOVIES_DB = {
+  0: [ // Dark Knight
+    {t:"The Dark Knight Rises",g:"Action",s:0.96}, {t:"Batman Begins",g:"Action",s:0.94},
+    {t:"Joker",g:"Drama/Crime",s:0.91}, {t:"Se7en",g:"Crime/Thriller",s:0.89},
+    {t:"Heat",g:"Crime",s:0.87}, {t:"Prisoners",g:"Thriller",s:0.85},
+    {t:"Gone Girl",g:"Thriller",s:0.83}, {t:"Zodiac",g:"Crime",s:0.80},
+  ],
+  1: [ // Inception
+    {t:"Tenet",g:"Sci-Fi/Action",s:0.95}, {t:"Memento",g:"Thriller",s:0.93},
+    {t:"The Prestige",g:"Drama/Thriller",s:0.91}, {t:"Interstellar",g:"Sci-Fi",s:0.90},
+    {t:"Shutter Island",g:"Thriller",s:0.88}, {t:"Arrival",g:"Sci-Fi",s:0.86},
+    {t:"Ex Machina",g:"Sci-Fi",s:0.84}, {t:"Blade Runner 2049",g:"Sci-Fi",s:0.81},
+  ],
+  2: [ // The Notebook
+    {t:"A Walk to Remember",g:"Romance",s:0.94}, {t:"Pride & Prejudice",g:"Romance/Drama",s:0.92},
+    {t:"La La Land",g:"Romance/Music",s:0.90}, {t:"Before Sunrise",g:"Romance/Drama",s:0.88},
+    {t:"Eternal Sunshine",g:"Romance/Sci-Fi",s:0.86}, {t:"Me Before You",g:"Romance",s:0.84},
+    {t:"About Time",g:"Romance/Fantasy",s:0.82}, {t:"Titanic",g:"Romance/Drama",s:0.80},
+  ],
+  3: [ // Interstellar
+    {t:"2001: A Space Odyssey",g:"Sci-Fi",s:0.96}, {t:"Gravity",g:"Sci-Fi",s:0.93},
+    {t:"The Martian",g:"Sci-Fi/Adventure",s:0.91}, {t:"Inception",g:"Sci-Fi/Thriller",s:0.89},
+    {t:"Contact",g:"Sci-Fi/Drama",s:0.87}, {t:"Arrival",g:"Sci-Fi",s:0.85},
+    {t:"Ad Astra",g:"Sci-Fi",s:0.82}, {t:"Moon",g:"Sci-Fi",s:0.79},
+  ],
+  4: [ // Chhichhore
+    {t:"3 Idiots",g:"Comedy/Drama",s:0.96}, {t:"Dil Chahta Hai",g:"Comedy/Drama",s:0.94},
+    {t:"Yeh Jawaani Hai Deewani",g:"Drama/Romance",s:0.91}, {t:"Zindagi Na Milegi Dobara",g:"Drama",s:0.90},
+    {t:"Dangal",g:"Drama/Sport",s:0.87}, {t:"Queen",g:"Drama",s:0.84},
+    {t:"Taare Zameen Par",g:"Drama",s:0.82}, {t:"English Vinglish",g:"Drama",s:0.79},
+  ],
+  5: [ // 3 Idiots
+    {t:"Chhichhore",g:"Comedy/Drama",s:0.95}, {t:"PK",g:"Comedy/Drama",s:0.93},
+    {t:"Munna Bhai MBBS",g:"Comedy/Drama",s:0.91}, {t:"Dil Chahta Hai",g:"Comedy",s:0.89},
+    {t:"Rang De Basanti",g:"Drama",s:0.86}, {t:"Swades",g:"Drama",s:0.83},
+    {t:"Lagaan",g:"Drama/Sport",s:0.81}, {t:"Taare Zameen Par",g:"Drama",s:0.78},
+  ],
+  6: [ // Parasite
+    {t:"Oldboy",g:"Thriller/Mystery",s:0.95}, {t:"Burning",g:"Thriller",s:0.92},
+    {t:"The Host",g:"Thriller",s:0.90}, {t:"Snowpiercer",g:"Sci-Fi/Thriller",s:0.88},
+    {t:"Train to Busan",g:"Thriller/Horror",s:0.86}, {t:"I Saw the Devil",g:"Thriller",s:0.83},
+    {t:"A Tale of Two Sisters",g:"Horror/Mystery",s:0.80}, {t:"Memories of Murder",g:"Crime",s:0.78},
+  ],
+};
+
+function runRecommender() {
+  const movieIdx = +document.getElementById('rec-movie').value;
+  const algo     = document.getElementById('rec-algo').value;
+  const list     = document.getElementById('rec-list');
+  list.innerHTML = '<div style="color:var(--accent);font-family:var(--font-mono);font-size:0.75rem;padding:12px 0;" class="processing">⟳ Running model...</div>';
+
+  setTimeout(() => {
+    let recs = [...MOVIES_DB[movieIdx]];
+    // Simulate algorithm differences
+    if (algo === 'cf') {
+      recs = recs.map(r => ({...r, s: Math.max(0.5, r.s - 0.05 + (Math.random()-0.5)*0.1)}));
+      document.getElementById('rec-rmse').textContent = '0.84';
+      document.getElementById('rec-acc').textContent = '+20%';
+    } else if (algo === 'cb') {
+      recs = recs.sort(() => Math.random()-0.5);
+      document.getElementById('rec-rmse').textContent = '1.12';
+      document.getElementById('rec-acc').textContent = '+8%';
+    } else {
+      document.getElementById('rec-rmse').textContent = '0.79';
+      document.getElementById('rec-acc').textContent = '+20%';
+    }
+    recs.sort((a,b) => b.s - a.s);
+    list.innerHTML = recs.slice(0,8).map((r,i) => `
+      <div class="rec-item" style="animation-delay:${i*0.05}s">
+        <span class="rec-rank">#${i+1}</span>
+        <span class="rec-title">${r.t}</span>
+        <span class="rec-genre">${r.g}</span>
+        <span class="rec-score">${(r.s*100).toFixed(0)}%</span>
+      </div>`).join('');
+  }, 800);
+}
+
+/* ════════════════════════════════════════════
+   PROJECT 2 — FRAUD DETECTION
+════════════════════════════════════════════ */
+function calcFraudScore(amount, hour, velocity, distance, intl, cardAge) {
+  let score = 0;
+  // Amount signal
+  score += Math.min((Math.log1p(amount) - 5) / 5, 0.25);
+  // Night time
+  if (hour >= 0 && hour < 6) score += 0.20;
+  // Velocity
+  score += Math.min(velocity / 25, 0.25);
+  // Distance
+  score += Math.min(Math.log1p(distance) / 10, 0.20);
+  // International
+  if (intl) score += 0.15;
+  // New card
+  if (cardAge < 30) score += 0.15;
+  // Cap and add small noise
+  score = Math.max(0.02, Math.min(0.98, score + (Math.random()-0.5)*0.04));
+  return score;
+}
+
+function runFraud() {
+  const amount   = +document.getElementById('f-amount').value;
+  const hour     = +document.getElementById('f-hour').value;
+  const velocity = +document.getElementById('f-velocity').value;
+  const distance = +document.getElementById('f-distance').value;
+  const intl     = +document.getElementById('f-intl').value;
+  const cardAge  = +document.getElementById('f-cardage').value;
+
+  const score  = calcFraudScore(amount, hour, velocity, distance, intl, cardAge);
+  const pct    = Math.round(score * 100);
+  const level  = pct > 65 ? 'high' : pct > 35 ? 'medium' : 'low';
+
+  // Update meter
+  document.getElementById('fraud-pct').textContent = pct + '%';
+  const fill = document.getElementById('risk-fill');
+  const meter = document.getElementById('risk-meter');
+  meter.className = 'risk-meter risk-' + level;
+  fill.style.width = pct + '%';
+
+  // Badge
+  const badge = document.getElementById('risk-badge');
+  const icons = {high:'🚨', medium:'⚠️', low:'✅'};
+  const labels = {high:'HIGH RISK — Flagged for review', medium:'MEDIUM RISK — Monitor closely', low:'LOW RISK — Transaction approved'};
+  badge.className = 'risk-badge ' + level;
+  badge.textContent = icons[level] + ' ' + labels[level];
+
+  // SHAP features
+  const features = [
+    {name:'Transaction Velocity', val: Math.min(velocity/25, 1)},
+    {name:'Distance from Home', val: Math.min(Math.log1p(distance)/10, 1)},
+    {name:'Transaction Amount', val: Math.min((Math.log1p(amount)-3)/7, 1)},
+    {name:'International Flag', val: intl ? 0.85 : 0.05},
+    {name:'Card Age (New Card?)', val: Math.max(0, 1 - cardAge/60)},
+    {name:'Hour of Day (Night?)', val: (hour<6||hour>22) ? 0.9 : 0.1},
+  ].sort((a,b) => b.val - a.val);
+
+  document.getElementById('shap-features').innerHTML = features.map(f => `
+    <div class="feature-bar-row">
+      <div class="feature-label">${f.name}</div>
+      <div class="feature-track"><div class="feature-fill" style="width:${f.val*100}%;background:${f.val>0.6?'var(--accent2)':f.val>0.3?'var(--accent5)':'var(--accent)'}"></div></div>
+      <div class="feature-pct">${Math.round(f.val*100)}%</div>
+    </div>`).join('');
+}
+
+function loadFraudPreset(type) {
+  if (type === 'legit') {
+    document.getElementById('f-amount').value = 850;
+    document.getElementById('f-hour').value = 14;
+    document.getElementById('f-velocity').value = 2;
+    document.getElementById('f-distance').value = 5;
+    document.getElementById('f-intl').value = 0;
+    document.getElementById('f-cardage').value = 720;
+  } else {
+    document.getElementById('f-amount').value = 12500;
+    document.getElementById('f-hour').value = 3;
+    document.getElementById('f-velocity').value = 18;
+    document.getElementById('f-distance').value = 1200;
+    document.getElementById('f-intl').value = 1;
+    document.getElementById('f-cardage').value = 4;
+  }
+  runFraud();
+}
+
+// Live transaction feed
+let _fraudFeedRunning = false;
+const TXN_MERCHANTS = ['Amazon Pay', 'Flipkart', 'Paytm', 'HDFC ATM', 'Zomato', 'BigBasket', 'Swiggy', 'MakeMyTrip', 'IRCTC', 'Unknown Merch.'];
+function startFraudFeed() {
+  _fraudFeedRunning = true;
+  window._fraudFeedRunning = true;
+  function addTxn() {
+    if (!document.getElementById('demo-1').classList.contains('active')) { setTimeout(addTxn, 2000); return; }
+    const isFraud = Math.random() < 0.18;
+    const amount  = isFraud ? (Math.random()*8000+2000).toFixed(0) : (Math.random()*1500+50).toFixed(0);
+    const merch   = TXN_MERCHANTS[Math.floor(Math.random()*TXN_MERCHANTS.length)];
+    const txnId   = 'TXN' + Math.random().toString(36).substr(2,6).toUpperCase();
+    const feed    = document.getElementById('txn-feed');
+    const row     = document.createElement('div');
+    row.className = 'txn-row ' + (isFraud?'fraud':'safe');
+    row.innerHTML = `<span class="txn-id">${txnId}</span><span class="txn-amount">₹${amount}</span><span style="color:var(--muted);flex:1;font-size:0.65rem">${merch}</span><span class="txn-status">${isFraud?'⚠ FRAUD':'✓ SAFE'}</span>`;
+    feed.prepend(row);
+    if (feed.children.length > 8) feed.lastChild.remove();
+    setTimeout(addTxn, 1200 + Math.random()*1800);
+  }
+  addTxn();
+}
+
+/* ════════════════════════════════════════════
+   PROJECT 3 — CHURN
+════════════════════════════════════════════ */
+function updateChurnSlider(field, val) {
+  if (field === 'tenure') document.getElementById('c-tenure-val').textContent = val + ' months';
+  if (field === 'monthly') document.getElementById('c-monthly-val').textContent = '₹' + val;
+  predictChurn();
+}
+
+function predictChurn() {
+  const tenure   = +document.getElementById('c-tenure').value;
+  const monthly  = +document.getElementById('c-monthly').value;
+  const contract = +document.getElementById('c-contract').value;
+  const internet = +document.getElementById('c-internet').value;
+  const support  = +document.getElementById('c-support').value;
+  const paper    = +document.getElementById('c-paperless').value;
+
+  let prob = 0.30;
+  prob += Math.max(0, (12 - tenure) / 40);
+  prob += (monthly - 20) / 350;
+  prob -= contract * 0.15;
+  prob += internet === 2 ? 0.08 : 0;
+  prob -= support * 0.10;
+  prob += paper * 0.04;
+  prob = Math.max(0.04, Math.min(0.96, prob + (Math.random()-0.5)*0.02));
+
+  const pct = Math.round(prob * 100);
+  // Gauge
+  const arcLen = 251.2;
+  const offset = arcLen - (arcLen * prob);
+  document.getElementById('gauge-fill-path').style.strokeDashoffset = offset;
+  const color = prob > 0.6 ? 'var(--accent2)' : prob > 0.3 ? 'var(--accent5)' : '#4ade80';
+  document.getElementById('gauge-fill-path').style.stroke = color;
+  document.getElementById('gauge-pct-text').textContent = pct + '%';
+  document.getElementById('gauge-pct-text').style.fill = color;
+
+  // Result card
+  const level = prob > 0.6 ? 'HIGH RISK 🚨' : prob > 0.3 ? 'MEDIUM RISK ⚠️' : 'LOW RISK ✅';
+  const action = prob > 0.6 ? 'Immediate retention call recommended' : prob > 0.3 ? 'Monitor and send discount offer' : 'No action needed';
+  document.getElementById('churn-result-card').innerHTML = `
+    <div style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:${color};margin-bottom:6px">${level}</div>
+    <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)">${action}</div>`;
+
+  // Drivers
+  const drivers = [
+    {name:'Short Tenure', val: Math.max(0, (12-tenure)/12)},
+    {name:'High Monthly Charges', val: Math.min((monthly-20)/100, 1)},
+    {name:'Month-to-Month Contract', val: contract===0?0.85:contract===1?0.4:0.1},
+    {name:'Fiber Optic Service', val: internet===2?0.7:0.2},
+    {name:'No Tech Support', val: support===0?0.75:0.15},
+    {name:'Paperless Billing', val: paper?0.45:0.15},
+  ].sort((a,b)=>b.val-a.val);
+
+  document.getElementById('churn-drivers').innerHTML = drivers.slice(0,4).map(d => `
+    <div class="feature-bar-row">
+      <div class="feature-label">${d.name}</div>
+      <div class="feature-track"><div class="feature-fill" style="width:${d.val*100}%;background:${color}"></div></div>
+      <div class="feature-pct">${Math.round(d.val*100)}%</div>
+    </div>`).join('');
+}
+
+/* ════════════════════════════════════════════
+   PROJECT 4 — CHATBOT NLP
+════════════════════════════════════════════ */
+const POSITIVE_WORDS = new Set(['great','good','excellent','amazing','wonderful','fantastic','happy','love','like','thanks','thank','helpful','perfect','awesome','working','great']);
+const NEGATIVE_WORDS = new Set(['bad','terrible','awful','horrible','hate','angry','frustrated','disappointed','broken','error','fail','problem','issue','wrong','worst','useless','crash','bug','refund','cancel','stupid','awful','worst']);
+
+function analyzeSentiment(text) {
+  const words = text.toLowerCase().split(/\W+/);
+  let pos = 0, neg = 0;
+  words.forEach(w => { if (POSITIVE_WORDS.has(w)) pos++; if (NEGATIVE_WORDS.has(w)) neg++; });
+  if (neg > pos) return {s:'negative', conf: Math.min(0.95, 0.65 + neg*0.08)};
+  if (pos > neg) return {s:'positive', conf: Math.min(0.95, 0.65 + pos*0.08)};
+  return {s:'neutral', conf: 0.55};
+}
+
+function classifyIntent(text) {
+  const t = text.toLowerCase();
+  if (/refund|cancel|money back|return/.test(t)) return 'refund';
+  if (/bill|invoice|charge|payment|subscription/.test(t)) return 'billing';
+  if (/error|crash|bug|not working|broken|issue|problem/.test(t)) return 'technical';
+  if (/login|password|account|access|locked/.test(t)) return 'account';
+  if (/plan|price|cost|feature|what|how|offer|subscription/.test(t)) return 'product_info';
+  if (/hi|hello|hey|good morning|good evening/.test(t)) return 'greeting';
+  if (/bye|goodbye|thanks|thank you/.test(t)) return 'farewell';
+  return 'general';
+}
+
+const BOT_RESPONSES = {
+  greeting: "Hello! 👋 Welcome! I'm your AI assistant. How can I help you today?",
+  farewell: "You're welcome! Have a great day! 😊 Feel free to reach out anytime.",
+  billing: "I can help with billing! Your current plan details are on the billing portal. For specific charges, please share your account ID and I'll look into it right away.",
+  product_info: "Great question! We offer three plans:\n• **Basic** — ₹499/mo (2 sessions/week)\n• **Standard** — ₹999/mo (daily access)\n• **Premium** — ₹1,999/mo (1-on-1 mentoring)\nWhich one interests you?",
+  account: "For account issues, click 'Forgot Password' on the login page. If you're locked out, I can escalate to our account team for immediate help. Should I do that?",
+  general: "Thank you for reaching out! Could you give me a bit more detail so I can help you better? 🙏",
+};
+
+function getBotResponse(intent, sentiment) {
+  const needsEscalation = (intent === 'refund' || intent === 'technical') && sentiment === 'negative';
+  if (needsEscalation) {
+    return { text: "I'm truly sorry you're experiencing this issue 😔 I can see this is urgent. I'm escalating you to a senior specialist right now — you'll receive a callback within 30 minutes. Your reference ID is #" + Math.random().toString(36).substr(2,6).toUpperCase(), escalated: true, auto: false };
+  }
+  if (intent === 'refund') return { text: "I understand you'd like a refund. Our policy offers a 7-day money-back guarantee. I'll initiate the process. Can you share your order ID?", escalated: false, auto: false };
+  if (intent === 'technical') return { text: "I see you're having a technical issue. Let me run a quick diagnostic. Could you tell me which device and OS version you're using?", escalated: false, auto: true };
+  return { text: BOT_RESPONSES[intent] || BOT_RESPONSES.general, escalated: false, auto: true };
+}
+
+function addMessage(text, isUser, sentiment=null, escalated=false, auto=true) {
+  const msgs = document.getElementById('chat-messages');
+  const div  = document.createElement('div');
+  div.className = 'msg ' + (isUser ? 'user' : 'bot');
+  const sentPill = sentiment ? `<span class="sentiment-pill ${sentiment.s}">${sentiment.s} ${Math.round(sentiment.conf*100)}%</span>` : '';
+  const escPill  = escalated ? '<span class="escalated-pill">🚨 escalated</span>' : '';
+  const autoPill = !isUser && auto && !escalated ? '<span style="color:var(--muted);font-size:0.58rem">auto-handled ✓</span>' : '';
+  div.innerHTML = `<div class="msg-bubble">${text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>
+    <div class="msg-meta">${sentPill}${escPill}${autoPill}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addMessage(text, true, analyzeSentiment(text));
+  setTimeout(() => {
+    const sent  = analyzeSentiment(text);
+    const intent = classifyIntent(text);
+    const resp   = getBotResponse(intent, sent.s);
+    addMessage(resp.text, false, null, resp.escalated, resp.auto);
+  }, 600);
+}
+
+function sendPreset(text) {
+  document.getElementById('chat-input').value = text;
+  sendChat();
+}
+
+/* ════════════════════════════════════════════
+   PROJECT 5 — MEDICAL CNN CANVAS
+════════════════════════════════════════════ */
+let canvasCtx, heatCtx, isDrawing = false, showHeatmap = false, currentScanType = null;
+
+function initCanvas() {
+  const canvas = document.getElementById('scanCanvas');
+  const heatCanvas = document.getElementById('heatmapCanvas');
+  canvasCtx = canvas.getContext('2d');
+  heatCtx   = heatCanvas.getContext('2d');
+  drawBackground();
+
+  canvas.addEventListener('mousedown', e => { isDrawing = true; canvasCtx.beginPath(); });
+  canvas.addEventListener('mousemove', e => {
+    if (!isDrawing) return;
+    const r = canvas.getBoundingClientRect();
+    const x = (e.clientX - r.left) * (400/r.width);
+    const y = (e.clientY - r.top) * (400/r.height);
+    canvasCtx.lineTo(x, y);
+    canvasCtx.strokeStyle = 'rgba(200,241,53,0.6)';
+    canvasCtx.lineWidth   = 3;
+    canvasCtx.stroke();
+    canvasCtx.beginPath();
+    canvasCtx.moveTo(x, y);
+  });
+  canvas.addEventListener('mouseup', () => { isDrawing = false; analyzeImage(); });
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); isDrawing = true; canvasCtx.beginPath(); });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!isDrawing) return;
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches[0];
+    const x = (t.clientX - r.left) * (400/r.width);
+    const y = (t.clientY - r.top) * (400/r.height);
+    canvasCtx.lineTo(x, y);
+    canvasCtx.strokeStyle = 'rgba(200,241,53,0.6)';
+    canvasCtx.lineWidth = 3; canvasCtx.stroke();
+    canvasCtx.beginPath(); canvasCtx.moveTo(x,y);
+  });
+  canvas.addEventListener('touchend', () => { isDrawing = false; analyzeImage(); });
+}
+
+function drawBackground() {
+  const ctx = canvasCtx;
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0,0,400,400);
+  // Scan lines
+  for(let y=0;y<400;y+=8){
+    ctx.fillStyle = `rgba(255,255,255,${0.01+Math.random()*0.02})`;
+    ctx.fillRect(0,y,400,1);
+  }
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth   = 0.5;
+  for(let i=0;i<400;i+=40){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,400); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(400,i); ctx.stroke(); }
+  // Center crosshair
+  ctx.strokeStyle = 'rgba(56,217,245,0.15)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(200,0); ctx.lineTo(200,400); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,200); ctx.lineTo(400,200); ctx.stroke();
+  ctx.strokeStyle = 'rgba(56,217,245,0.2)';
+  ctx.beginPath(); ctx.arc(200,200,80,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(200,200,120,0,Math.PI*2); ctx.stroke();
+}
+
+function generateScan(type) {
+  currentScanType = type;
+  const ctx = canvasCtx;
+  drawBackground();
+
+  if (type === 'normal') {
+    // Normal-looking scan with clean structure
+    ctx.strokeStyle = 'rgba(200,241,53,0.4)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(200,200,70,90,0,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(200,200,40,55,0,0,Math.PI*2); ctx.stroke();
+    for(let i=0;i<8;i++){
+      const a = (i/8)*Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(200+40*Math.cos(a), 200+55*Math.sin(a));
+      ctx.lineTo(200+70*Math.cos(a), 200+90*Math.sin(a));
+      ctx.strokeStyle = `rgba(200,241,53,${0.1+Math.random()*0.2})`;
+      ctx.stroke();
+    }
+    // Uniform density spots
+    for(let i=0;i<30;i++){
+      const a=Math.random()*Math.PI*2, r=Math.random()*65;
+      ctx.fillStyle = `rgba(200,241,53,${0.03+Math.random()*0.04})`;
+      ctx.beginPath(); ctx.arc(200+r*Math.cos(a), 200+r*Math.sin(a), 3+Math.random()*4, 0, Math.PI*2); ctx.fill();
+    }
+  } else {
+    // Anomaly — irregular mass
+    ctx.strokeStyle = 'rgba(200,241,53,0.3)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(200,200,70,90,0,0,Math.PI*2); ctx.stroke();
+    // Irregular blob (anomaly)
+    ctx.fillStyle = 'rgba(255,95,64,0.15)';
+    ctx.beginPath();
+    const pts = 12; const cx=230, cy=170;
+    for(let i=0;i<pts;i++){
+      const a=(i/pts)*Math.PI*2, r=20+Math.random()*25;
+      if(i===0) ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+      else ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,95,64,0.6)'; ctx.lineWidth = 2;
+    ctx.stroke();
+    // High-density spots around anomaly
+    for(let i=0;i<20;i++){
+      const a=Math.random()*Math.PI*2, r=Math.random()*22;
+      ctx.fillStyle = `rgba(255,95,64,${0.2+Math.random()*0.3})`;
+      ctx.beginPath(); ctx.arc(cx+r*Math.cos(a), cy+r*Math.sin(a), 2+Math.random()*5, 0, Math.PI*2); ctx.fill();
+    }
+  }
+  setTimeout(() => analyzeImage(type), 200);
+}
+
+function analyzeImage(forcedType) {
+  const type = forcedType || currentScanType;
+  if (!type) {
+    // Drawing by hand — random prediction
+    const prob = 0.3 + Math.random() * 0.4;
+    showPrediction(prob);
+    return;
+  }
+  const base = type === 'normal' ? 0.08 : 0.88;
+  const prob  = Math.max(0.03, Math.min(0.97, base + (Math.random()-0.5)*0.06));
+  setTimeout(() => showPrediction(prob), 400);
+}
+
+function showPrediction(anomalyProb) {
+  const isAnom = anomalyProb >= 0.5;
+  const label  = isAnom ? 'Anomaly Detected' : 'Normal';
+  const conf   = Math.max(anomalyProb, 1-anomalyProb);
+
+  document.getElementById('pred-class').textContent = label;
+  document.getElementById('pred-class').className   = 'pred-class ' + (isAnom?'anomaly':'normal');
+  document.getElementById('pred-conf').textContent  = (conf*100).toFixed(1) + '%';
+  document.getElementById('conf-fill').style.width  = (conf*100) + '%';
+  document.getElementById('conf-fill').className    = 'confidence-fill ' + (isAnom?'anomaly':'normal');
+  document.getElementById('p-normal').textContent   = ((1-anomalyProb)*100).toFixed(1) + '%';
+  document.getElementById('p-anomaly').textContent  = (anomalyProb*100).toFixed(1) + '%';
+  document.getElementById('p-normal').style.color   = isAnom ? 'var(--muted)' : '#4ade80';
+  document.getElementById('p-anomaly').style.color  = isAnom ? 'var(--accent2)' : 'var(--muted)';
+
+  // Highlight top_conv layer
+  const tcl = document.getElementById('top-conv-layer');
+  tcl.style.background = 'rgba(255,95,64,0.1)';
+  setTimeout(() => tcl.style.background='', 2000);
+
+  if (showHeatmap) drawHeatmap(isAnom);
+}
+
+function drawHeatmap(isAnom) {
+  const hc  = document.getElementById('heatmapCanvas');
+  const ctx = heatCtx;
+  ctx.clearRect(0,0,400,400);
+  const cx = isAnom ? 230 : 200, cy = isAnom ? 170 : 200;
+  const grd = ctx.createRadialGradient(cx,cy,0,cx,cy,isAnom?60:50);
+  grd.addColorStop(0, isAnom ? 'rgba(255,95,64,0.55)' : 'rgba(74,222,128,0.5)');
+  grd.addColorStop(0.5, isAnom ? 'rgba(255,179,71,0.25)' : 'rgba(200,241,53,0.2)');
+  grd.addColorStop(1, 'transparent');
+  ctx.fillStyle = grd; ctx.fillRect(0,0,400,400);
+  hc.style.opacity = '1';
+}
+
+function toggleHeatmap() {
+  showHeatmap = !showHeatmap;
+  const hc = document.getElementById('heatmapCanvas');
+  if (!showHeatmap) { heatCtx.clearRect(0,0,400,400); hc.style.opacity='0'; }
+  else if (currentScanType) drawHeatmap(currentScanType==='anomaly');
+}
+
+function clearCanvas() {
+  currentScanType = null;
+  drawBackground();
+  heatCtx.clearRect(0,0,400,400);
+  document.getElementById('heatmapCanvas').style.opacity = '0';
+  document.getElementById('pred-class').textContent = '— Awaiting scan —';
+  document.getElementById('pred-class').style.color = 'var(--muted)';
+  document.getElementById('pred-conf').textContent = '—';
+  document.getElementById('conf-fill').style.width = '0%';
+  document.getElementById('p-normal').textContent = '—';
+  document.getElementById('p-anomaly').textContent = '—';
+}
+
+/* ════════════════════════════════════════════
+   PROJECT 6 — SALES BI
+════════════════════════════════════════════ */
+const CATS   = ['Electronics','Fashion','Home & Kitchen','Books','Sports','Beauty'];
+const CAT_REV = [6280000, 5140000, 4520000, 3280000, 2840000, 2360000];
+const CAT_COLORS = ['var(--accent)','var(--accent3)','var(--accent4)','var(--accent5)','#4ade80','var(--accent2)'];
+
+function initSalesCharts() {
+  if (window._salesInited) return;
+  window._salesInited = true;
+
+  // Category bar chart
+  const maxRev = Math.max(...CAT_REV);
+  document.getElementById('cat-chart').innerHTML = CATS.map((c,i) => `
+    <div class="bar-row">
+      <div class="bar-name">${c}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:0%;background:${CAT_COLORS[i]}" data-target="${(CAT_REV[i]/maxRev*100).toFixed(0)}"></div></div>
+      <div class="bar-val">₹${(CAT_REV[i]/100000).toFixed(1)}L</div>
+    </div>`).join('');
+  setTimeout(() => document.querySelectorAll('.bar-fill').forEach(b => { b.style.width = b.dataset.target + '%'; b.style.transition = 'width 0.9s cubic-bezier(0.4,0,0.2,1)'; }), 100);
+
+  // Trend line canvas
+  const tCanvas = document.getElementById('trend-canvas');
+  const tCtx    = tCanvas.getContext('2d');
+  tCanvas.width  = tCanvas.offsetWidth * 2;
+  tCanvas.height = 160;
+  const months = 12;
+  const data   = Array.from({length:months}, (_,i) => 150000 + i*18000 + Math.sin(i)*25000 + Math.random()*15000);
+  const maxD   = Math.max(...data), minD = Math.min(...data);
+  const W = tCanvas.width, H = tCanvas.height;
+  const pad = {t:20,b:30,l:20,r:20};
+
+  // Gradient fill
+  const grd = tCtx.createLinearGradient(0,0,0,H);
+  grd.addColorStop(0, 'rgba(200,241,53,0.25)');
+  grd.addColorStop(1, 'rgba(200,241,53,0)');
+
+  tCtx.beginPath();
+  data.forEach((d,i) => {
+    const x = pad.l + i*(W-pad.l-pad.r)/(months-1);
+    const y = pad.t + (1-(d-minD)/(maxD-minD))*(H-pad.t-pad.b);
+    i===0 ? tCtx.moveTo(x,y) : tCtx.lineTo(x,y);
+  });
+  tCtx.lineTo(W-pad.r, H-pad.b);
+  tCtx.lineTo(pad.l, H-pad.b);
+  tCtx.closePath();
+  tCtx.fillStyle = grd; tCtx.fill();
+
+  tCtx.beginPath();
+  data.forEach((d,i) => {
+    const x = pad.l + i*(W-pad.l-pad.r)/(months-1);
+    const y = pad.t + (1-(d-minD)/(maxD-minD))*(H-pad.t-pad.b);
+    i===0 ? tCtx.moveTo(x,y) : tCtx.lineTo(x,y);
+  });
+  tCtx.strokeStyle = 'var(--accent)'; tCtx.lineWidth = 3; tCtx.stroke();
+
+  // Month labels
+  const mLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  tCtx.fillStyle = 'rgba(102,102,102,0.8)'; tCtx.font = '18px JetBrains Mono, monospace'; tCtx.textAlign = 'center';
+  mLabels.forEach((m,i) => {
+    const x = pad.l + i*(W-pad.l-pad.r)/(months-1);
+    tCtx.fillText(m, x, H-8);
+  });
+
+  // Data points
+  data.forEach((d,i) => {
+    const x = pad.l + i*(W-pad.l-pad.r)/(months-1);
+    const y = pad.t + (1-(d-minD)/(maxD-minD))*(H-pad.t-pad.b);
+    tCtx.beginPath();
+    tCtx.arc(x,y,5,0,Math.PI*2);
+    tCtx.fillStyle = 'var(--accent)'; tCtx.fill();
+  });
+}
+
+function initDonut() {
+  const C = 2 * Math.PI * 50; // circumference
+  const shares = [0.45, 0.30, 0.15, 0.10];
+  const ids    = ['donut-online','donut-mobile','donut-store','donut-partner'];
+  let offset   = 0;
+  ids.forEach((id,i) => {
+    const el   = document.getElementById(id);
+    const dash = C * shares[i];
+    el.style.strokeDasharray  = `${dash} ${C - dash}`;
+    el.style.strokeDashoffset = -offset;
+    offset += dash;
+  });
+}
+
+function buildCohort() {
+  if (window._cohortBuilt) return;
+  window._cohortBuilt = true;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun'];
+  const periods = [0,1,2,3,4,5];
+  const data = [
+    [100,68,52,43,38,34],
+    [100,71,55,46,41,37],
+    [100,65,49,41,36,null],
+    [100,70,53,44,null,null],
+    [100,67,51,null,null,null],
+    [100,72,null,null,null,null],
+  ];
+  const container = document.getElementById('cohort-chart');
+  container.style.overflowX = 'auto';
+
+  const colW = (100/7) + '%';
+  let html = `<div style="display:grid;grid-template-columns:70px repeat(6,1fr);gap:3px;min-width:360px">`;
+  // Header
+  html += `<div style="font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);display:flex;align-items:center">Cohort</div>`;
+  periods.forEach(p => { html += `<div style="font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);text-align:center">M+${p}</div>`; });
+
+  months.forEach((m,r) => {
+    html += `<div style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted2);display:flex;align-items:center">${m}</div>`;
+    periods.forEach(p => {
+      const val = data[r][p];
+      if (val === null) { html += `<div style="background:var(--surface3);border-radius:2px;height:22px"></div>`; return; }
+      const alpha = val/100;
+      const bg = `rgba(200,241,53,${0.1 + alpha * 0.6})`;
+      const textColor = alpha > 0.5 ? 'rgba(0,0,0,0.8)' : 'var(--muted2)';
+      html += `<div class="cohort-cell" style="background:${bg};color:${textColor}" title="${m} cohort, Month ${p}: ${val}% retained">${val}%</div>`;
+    });
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+/* ════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════ */
+// Run churn prediction once on load (demo-2 default sliders)
+window.addEventListener('load', () => {
+  // Slight delay to ensure DOM ready
+  setTimeout(predictChurn, 500);
+  // Init canvas when tab is clicked
+  document.querySelectorAll('.demo-tab')[4]?.addEventListener('click', () => setTimeout(initCanvas, 50));
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key >= '1' && e.key <= '6' && document.activeElement.tagName !== 'INPUT') {
+    switchDemo(+e.key - 1);
+  }
+  if (e.key === 'Enter' && document.activeElement.id === 'chat-input') sendChat();
+});
+</script>
+</body>
+</html>
